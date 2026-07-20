@@ -154,7 +154,8 @@
 
       .workspace {
         display: grid;
-        grid-template-columns: 218px minmax(430px, 0.88fr) minmax(640px, 1.42fr);
+        grid-template-columns:
+          218px minmax(430px, 0.88fr) minmax(640px, 1.42fr);
         gap: 18px;
         align-items: start;
       }
@@ -1045,89 +1046,41 @@
               <span class="review-nav-kicker">Input workflow</span>
               <div class="review-nav-title-row">
                 <h2 class="review-nav-title">Review Sections</h2>
-                <span
-                  class="review-nav-progress"
-                  id="reviewNavProgress"
-                  aria-live="polite"
-                  >1 of 8</span
-                >
+                <span class="review-nav-progress" id="reviewNavProgress" aria-live="polite">1 of 8</span>
               </div>
             </div>
             <div class="review-nav-list" id="reviewNavList">
-              <a
-                class="review-nav-item is-active"
-                href="#setupSection"
-                data-review-target="setupSection"
-                aria-current="step"
-              >
+              <a class="review-nav-item is-active" href="#setupSection" data-review-target="setupSection" aria-current="step">
                 <span class="review-nav-number">1</span>
                 <span class="review-nav-label">Review Setup</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#machinesSection"
-                data-review-target="machinesSection"
-              >
+              <a class="review-nav-item" href="#machinesSection" data-review-target="machinesSection">
                 <span class="review-nav-number">2</span>
-                <span class="review-nav-label"
-                  >Franchisee Operating Metrics</span
-                >
+                <span class="review-nav-label">Franchisee Operating Metrics</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#financialSection"
-                data-review-target="financialSection"
-              >
+              <a class="review-nav-item" href="#financialSection" data-review-target="financialSection">
                 <span class="review-nav-number">3</span>
-                <span class="review-nav-label"
-                  >QuickBooks Financial Summary</span
-                >
+                <span class="review-nav-label">QuickBooks Financial Summary</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#cashSection"
-                data-review-target="cashSection"
-              >
+              <a class="review-nav-item" href="#cashSection" data-review-target="cashSection">
                 <span class="review-nav-number">4</span>
                 <span class="review-nav-label">Cash &amp; Owner Capital</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#debtSection"
-                data-review-target="debtSection"
-              >
+              <a class="review-nav-item" href="#debtSection" data-review-target="debtSection">
                 <span class="review-nav-number">5</span>
-                <span class="review-nav-label"
-                  >Debt / Credit Card Schedule</span
-                >
+                <span class="review-nav-label">Debt / Credit Card Schedule</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#arSection"
-                data-review-target="arSection"
-              >
+              <a class="review-nav-item" href="#arSection" data-review-target="arSection">
                 <span class="review-nav-number">6</span>
-                <span class="review-nav-label"
-                  >Accounts Receivable &amp; Collections</span
-                >
+                <span class="review-nav-label">Accounts Receivable &amp; Collections</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#benchmarkSection"
-                data-review-target="benchmarkSection"
-              >
+              <a class="review-nav-item" href="#benchmarkSection" data-review-target="benchmarkSection">
                 <span class="review-nav-number">7</span>
                 <span class="review-nav-label">Benchmark Settings</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#notesSection"
-                data-review-target="notesSection"
-              >
+              <a class="review-nav-item" href="#notesSection" data-review-target="notesSection">
                 <span class="review-nav-number">8</span>
-                <span class="review-nav-label"
-                  >Review Notes &amp; Follow-Up</span
-                >
+                <span class="review-nav-label">Review Notes &amp; Follow-Up</span>
               </a>
             </div>
           </nav>
@@ -2970,19 +2923,13 @@ Help review QBO account mapping and compare service cost categories to Icebox se
         const section = $(sectionId);
         if (!section) return;
         const offset = reviewScrollOffset();
-        let targetTop =
-          section.getBoundingClientRect().top + window.scrollY - offset;
+        let targetTop = section.getBoundingClientRect().top + window.scrollY - offset;
         if (block === "center") {
           const availableHeight = Math.max(320, window.innerHeight - offset);
           targetTop =
             section.getBoundingClientRect().top +
             window.scrollY -
-            Math.max(
-              offset,
-              (availableHeight -
-                Math.min(section.offsetHeight, availableHeight)) /
-                2,
-            );
+            Math.max(offset, (availableHeight - Math.min(section.offsetHeight, availableHeight)) / 2);
         }
         window.scrollTo({
           top: Math.max(0, targetTop),
@@ -3007,8 +2954,7 @@ Help review QBO account mapping and compare service cost categories to Icebox se
         });
 
         const progress = $("reviewNavProgress");
-        if (progress)
-          progress.textContent = `${activeIndex + 1} of ${reviewSectionIds.length}`;
+        if (progress) progress.textContent = `${activeIndex + 1} of ${reviewSectionIds.length}`;
 
         const activeItem = document.querySelector(
           `[data-review-target="${sectionId}"]`,
@@ -3024,21 +2970,18 @@ Help review QBO account mapping and compare service cost categories to Icebox se
 
       function updateActiveReviewSectionFromScroll() {
         reviewScrollTicking = false;
-        const activationLine =
-          reviewScrollOffset() + Math.min(140, window.innerHeight * 0.2);
+        const activationLine = reviewScrollOffset() + Math.min(140, window.innerHeight * 0.2);
         const sections = reviewSectionIds.map((id) => $(id)).filter(Boolean);
         if (!sections.length) return;
 
         let current = sections[0];
         for (const section of sections) {
-          if (section.getBoundingClientRect().top <= activationLine)
-            current = section;
+          if (section.getBoundingClientRect().top <= activationLine) current = section;
           else break;
         }
 
         const atPageBottom =
-          window.innerHeight + window.scrollY >=
-          document.documentElement.scrollHeight - 8;
+          window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8;
         if (atPageBottom) current = sections[sections.length - 1];
         setActiveReviewSection(current.id);
       }
@@ -3056,8 +2999,7 @@ Help review QBO account mapping and compare service cost categories to Icebox se
             const sectionId = item.dataset.reviewTarget;
             setActiveReviewSection(sectionId);
             scrollToReviewSection(sectionId);
-            if (history.replaceState)
-              history.replaceState(null, "", `#${sectionId}`);
+            if (history.replaceState) history.replaceState(null, "", `#${sectionId}`);
           });
         });
 
@@ -3087,9 +3029,7 @@ Help review QBO account mapping and compare service cost categories to Icebox se
         const initialHash = window.location.hash.slice(1);
         if (reviewSectionIds.includes(initialHash)) {
           setActiveReviewSection(initialHash);
-          window.requestAnimationFrame(() =>
-            scrollToReviewSection(initialHash),
-          );
+          window.requestAnimationFrame(() => scrollToReviewSection(initialHash));
         } else {
           setActiveReviewSection(reviewSectionIds[0]);
           queueReviewScrollUpdate();
