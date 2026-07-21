@@ -154,7 +154,8 @@
 
       .workspace {
         display: grid;
-        grid-template-columns: 218px minmax(430px, 0.88fr) minmax(640px, 1.42fr);
+        grid-template-columns:
+          218px minmax(430px, 0.88fr) minmax(640px, 1.42fr);
         gap: 18px;
         align-items: start;
       }
@@ -1106,89 +1107,41 @@
               <span class="review-nav-kicker">Input workflow</span>
               <div class="review-nav-title-row">
                 <h2 class="review-nav-title">Review Sections</h2>
-                <span
-                  class="review-nav-progress"
-                  id="reviewNavProgress"
-                  aria-live="polite"
-                  >1 of 8</span
-                >
+                <span class="review-nav-progress" id="reviewNavProgress" aria-live="polite">1 of 8</span>
               </div>
             </div>
             <div class="review-nav-list" id="reviewNavList">
-              <a
-                class="review-nav-item is-active"
-                href="#setupSection"
-                data-review-target="setupSection"
-                aria-current="step"
-              >
+              <a class="review-nav-item is-active" href="#setupSection" data-review-target="setupSection" aria-current="step">
                 <span class="review-nav-number">1</span>
                 <span class="review-nav-label">Review Setup</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#machinesSection"
-                data-review-target="machinesSection"
-              >
+              <a class="review-nav-item" href="#machinesSection" data-review-target="machinesSection">
                 <span class="review-nav-number">2</span>
-                <span class="review-nav-label"
-                  >Franchisee Operating Metrics</span
-                >
+                <span class="review-nav-label">Franchisee Operating Metrics</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#financialSection"
-                data-review-target="financialSection"
-              >
+              <a class="review-nav-item" href="#financialSection" data-review-target="financialSection">
                 <span class="review-nav-number">3</span>
-                <span class="review-nav-label"
-                  >QuickBooks Financial Summary</span
-                >
+                <span class="review-nav-label">QuickBooks Financial Summary</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#cashSection"
-                data-review-target="cashSection"
-              >
+              <a class="review-nav-item" href="#cashSection" data-review-target="cashSection">
                 <span class="review-nav-number">4</span>
                 <span class="review-nav-label">Cash &amp; Owner Capital</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#debtSection"
-                data-review-target="debtSection"
-              >
+              <a class="review-nav-item" href="#debtSection" data-review-target="debtSection">
                 <span class="review-nav-number">5</span>
-                <span class="review-nav-label"
-                  >Debt / Credit Card Schedule</span
-                >
+                <span class="review-nav-label">Debt / Credit Card Schedule</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#arSection"
-                data-review-target="arSection"
-              >
+              <a class="review-nav-item" href="#arSection" data-review-target="arSection">
                 <span class="review-nav-number">6</span>
-                <span class="review-nav-label"
-                  >Accounts Receivable &amp; Collections</span
-                >
+                <span class="review-nav-label">Accounts Receivable &amp; Collections</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#benchmarkSection"
-                data-review-target="benchmarkSection"
-              >
+              <a class="review-nav-item" href="#benchmarkSection" data-review-target="benchmarkSection">
                 <span class="review-nav-number">7</span>
                 <span class="review-nav-label">Benchmark Settings</span>
               </a>
-              <a
-                class="review-nav-item"
-                href="#notesSection"
-                data-review-target="notesSection"
-              >
+              <a class="review-nav-item" href="#notesSection" data-review-target="notesSection">
                 <span class="review-nav-number">8</span>
-                <span class="review-nav-label"
-                  >Review Notes &amp; Follow-Up</span
-                >
+                <span class="review-nav-label">Review Notes &amp; Follow-Up</span>
               </a>
             </div>
           </nav>
@@ -1238,7 +1191,10 @@
                       data-help="Use a market name, territory name, or anonymized name if you want confidentiality."
                       >?</span
                     ></label
-                  ><input id="marketName" value="" />
+                  ><input
+                    id="marketName"
+                    value=""
+                  />
                 </div>
                 <div>
                   <label
@@ -1324,43 +1280,70 @@
                       class="data-source-option"
                       for="dataSourceQuickBooksPL"
                     >
-                      <input id="dataSourceQuickBooksPL" type="checkbox" />
+                      <input
+                        id="dataSourceQuickBooksPL"
+                        type="checkbox"
+                      />
                       <span>QuickBooks P&amp;L</span>
                     </label>
                     <label
                       class="data-source-option"
                       for="dataSourceBalanceSheet"
                     >
-                      <input id="dataSourceBalanceSheet" type="checkbox" />
+                      <input
+                        id="dataSourceBalanceSheet"
+                        type="checkbox"
+                      />
                       <span>Balance Sheet</span>
                     </label>
-                    <label class="data-source-option" for="dataSourceArAging">
-                      <input id="dataSourceArAging" type="checkbox" />
+                    <label
+                      class="data-source-option"
+                      for="dataSourceArAging"
+                    >
+                      <input
+                        id="dataSourceArAging"
+                        type="checkbox"
+                      />
                       <span>A/R Aging</span>
                     </label>
                     <label
                       class="data-source-option"
                       for="dataSourceTransactionDetail"
                     >
-                      <input id="dataSourceTransactionDetail" type="checkbox" />
+                      <input
+                        id="dataSourceTransactionDetail"
+                        type="checkbox"
+                      />
                       <span>Transaction Detail</span>
                     </label>
                     <label
                       class="data-source-option"
                       for="dataSourceIceboxMachines"
                     >
-                      <input id="dataSourceIceboxMachines" type="checkbox" />
+                      <input
+                        id="dataSourceIceboxMachines"
+                        type="checkbox"
+                      />
                       <span>Icebox machines</span>
                     </label>
                     <label
                       class="data-source-option"
                       for="dataSourceIceboxLeases"
                     >
-                      <input id="dataSourceIceboxLeases" type="checkbox" />
+                      <input
+                        id="dataSourceIceboxLeases"
+                        type="checkbox"
+                      />
                       <span>Icebox leases</span>
                     </label>
-                    <label class="data-source-option" for="dataSourceOther">
-                      <input id="dataSourceOther" type="checkbox" />
+                    <label
+                      class="data-source-option"
+                      for="dataSourceOther"
+                    >
+                      <input
+                        id="dataSourceOther"
+                        type="checkbox"
+                      />
                       <span>Other</span>
                     </label>
                   </div>
@@ -1393,7 +1376,12 @@
                       data-help="How many machines were leased to customers at the start of the quarter."
                       >?</span
                     ></label
-                  ><input id="machinesStart" type="number" step="1" value="0" />
+                  ><input
+                    id="machinesStart"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
                 </div>
                 <div>
                   <label
@@ -1413,7 +1401,12 @@
                       data-help="How many machines were added and started producing lease revenue during the period."
                       >?</span
                     ></label
-                  ><input id="machinesAdded" type="number" step="1" value="0" />
+                  ><input
+                    id="machinesAdded"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
                 </div>
                 <div>
                   <label
@@ -1438,7 +1431,12 @@
                       data-help="The average amount customers pay each month for each leased machine."
                       >?</span
                     ></label
-                  ><input id="avgLeaseRate" type="number" step="1" value="0" />
+                  ><input
+                    id="avgLeaseRate"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
                 </div>
                 <div>
                   <label
@@ -1448,7 +1446,12 @@
                       data-help="The amount expected each month from active customer machine leases at the end of the review period."
                       >?</span
                     ></label
-                  ><input id="currentMRR" type="number" step="1" value="0" />
+                  ><input
+                    id="currentMRR"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
                 </div>
                 <div>
                   <label
@@ -1498,7 +1501,12 @@
                       data-help="Customer lease revenue for machines during the review period."
                       >?</span
                     ></label
-                  ><input id="leaseRevenue" type="number" step="1" value="0" />
+                  ><input
+                    id="leaseRevenue"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
                 </div>
                 <div>
                   <label
@@ -1508,7 +1516,12 @@
                       data-help="Any non-lease revenue, such as service jobs, install fees, or other customer charges."
                       >?</span
                     ></label
-                  ><input id="otherRevenue" type="number" step="1" value="0" />
+                  ><input
+                    id="otherRevenue"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
                 </div>
                 <div>
                   <label
@@ -1573,7 +1586,12 @@
                       data-help="Amounts paid to Iceworks under the franchise agreement."
                       >?</span
                     ></label
-                  ><input id="royaltyCost" type="number" step="1" value="0" />
+                  ><input
+                    id="royaltyCost"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
                 </div>
                 <div>
                   <label
@@ -1583,7 +1601,12 @@
                       data-help="Fees paid to collect customer payments, such as card or ACH processing."
                       >?</span
                     ></label
-                  ><input id="merchantFees" type="number" step="1" value="0" />
+                  ><input
+                    id="merchantFees"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
                 </div>
                 <div>
                   <label
@@ -1593,7 +1616,12 @@
                       data-help="Regular business bills like storage, insurance, phone, software, vehicle, accounting, marketing, and office expenses."
                       >?</span
                     ></label
-                  ><input id="fixedOverhead" type="number" step="1" value="0" />
+                  ><input
+                    id="fixedOverhead"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
                 </div>
                 <div>
                   <label
@@ -1932,7 +1960,8 @@
                       data-help="Things the franchisee should keep doing because they appear to be helping the business."
                       >?</span
                     ></label
-                  ><textarea id="workingWell"></textarea>
+                  ><textarea id="workingWell"></textarea
+                  >
                 </div>
                 <div class="full">
                   <label
@@ -1942,7 +1971,8 @@
                       data-help="Use discussion language, not instructions. Example: Review whether service costs are trending higher than expected."
                       >?</span
                     ></label
-                  ><textarea id="discussionItems"></textarea>
+                  ><textarea id="discussionItems"></textarea
+                  >
                 </div>
                 <div class="full">
                   <label
@@ -1952,7 +1982,8 @@
                       data-help="Actions the franchisee agrees to take or information they agree to gather before the next review."
                       >?</span
                     ></label
-                  ><textarea id="followUpItems"></textarea>
+                  ><textarea id="followUpItems"></textarea
+                  >
                 </div>
                 <div class="full">
                   <label
@@ -1962,7 +1993,8 @@
                       data-help="Support items Iceworks will provide, such as reporting help, vendor support, CRM cleanup, or follow-up training."
                       >?</span
                     ></label
-                  ><textarea id="iceworksItems"></textarea>
+                  ><textarea id="iceworksItems"></textarea
+                  >
                 </div>
               </div>
             </section>
@@ -2384,12 +2416,12 @@
         const marketLabel = textVal("marketName").trim();
         const periodLabel = textVal("periodName").trim();
         const reviewParts = [marketLabel, periodLabel].filter(Boolean);
-        $("reviewLabel").textContent = reviewParts.length
-          ? reviewParts.join(" · ")
-          : "Quarterly review";
-        $("dashboardSubhead").textContent = reviewParts.length
-          ? `${reviewParts.join(" · ")} · ${months} month review`
-          : "Actual-performance snapshot";
+        $("reviewLabel").textContent =
+          reviewParts.length ? reviewParts.join(" · ") : "Quarterly review";
+        $("dashboardSubhead").textContent =
+          reviewParts.length
+            ? `${reviewParts.join(" · ")} · ${months} month review`
+            : "Actual-performance snapshot";
         window.__reviewData = data;
       }
 
@@ -2987,19 +3019,13 @@
         const section = $(sectionId);
         if (!section) return;
         const offset = reviewScrollOffset();
-        let targetTop =
-          section.getBoundingClientRect().top + window.scrollY - offset;
+        let targetTop = section.getBoundingClientRect().top + window.scrollY - offset;
         if (block === "center") {
           const availableHeight = Math.max(320, window.innerHeight - offset);
           targetTop =
             section.getBoundingClientRect().top +
             window.scrollY -
-            Math.max(
-              offset,
-              (availableHeight -
-                Math.min(section.offsetHeight, availableHeight)) /
-                2,
-            );
+            Math.max(offset, (availableHeight - Math.min(section.offsetHeight, availableHeight)) / 2);
         }
         window.scrollTo({
           top: Math.max(0, targetTop),
@@ -3024,8 +3050,7 @@
         });
 
         const progress = $("reviewNavProgress");
-        if (progress)
-          progress.textContent = `${activeIndex + 1} of ${reviewSectionIds.length}`;
+        if (progress) progress.textContent = `${activeIndex + 1} of ${reviewSectionIds.length}`;
 
         const activeItem = document.querySelector(
           `[data-review-target="${sectionId}"]`,
@@ -3041,21 +3066,18 @@
 
       function updateActiveReviewSectionFromScroll() {
         reviewScrollTicking = false;
-        const activationLine =
-          reviewScrollOffset() + Math.min(140, window.innerHeight * 0.2);
+        const activationLine = reviewScrollOffset() + Math.min(140, window.innerHeight * 0.2);
         const sections = reviewSectionIds.map((id) => $(id)).filter(Boolean);
         if (!sections.length) return;
 
         let current = sections[0];
         for (const section of sections) {
-          if (section.getBoundingClientRect().top <= activationLine)
-            current = section;
+          if (section.getBoundingClientRect().top <= activationLine) current = section;
           else break;
         }
 
         const atPageBottom =
-          window.innerHeight + window.scrollY >=
-          document.documentElement.scrollHeight - 8;
+          window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8;
         if (atPageBottom) current = sections[sections.length - 1];
         setActiveReviewSection(current.id);
       }
@@ -3073,8 +3095,7 @@
             const sectionId = item.dataset.reviewTarget;
             setActiveReviewSection(sectionId);
             scrollToReviewSection(sectionId);
-            if (history.replaceState)
-              history.replaceState(null, "", `#${sectionId}`);
+            if (history.replaceState) history.replaceState(null, "", `#${sectionId}`);
           });
         });
 
@@ -3104,9 +3125,7 @@
         const initialHash = window.location.hash.slice(1);
         if (reviewSectionIds.includes(initialHash)) {
           setActiveReviewSection(initialHash);
-          window.requestAnimationFrame(() =>
-            scrollToReviewSection(initialHash),
-          );
+          window.requestAnimationFrame(() => scrollToReviewSection(initialHash));
         } else {
           setActiveReviewSection(reviewSectionIds[0]);
           queueReviewScrollUpdate();
