@@ -2826,8 +2826,10 @@
             value: numfmt(val("machinesEnd")),
             note: `${numfmt(data.machineGrowth)} net added this period`,
             section: "machines",
-            what: "The number of machines actively leased to customers at the end of the review period. The net-added note shows whether the active fleet grew or shrank during the period.",
-            why: "Active machines are the core revenue-producing base of the franchise. Growth generally creates more recurring revenue, while removals or inactive machines can slow that growth.",
+            what:
+              "The number of machines actively leased to customers at the end of the review period. The net-added note shows whether the active fleet grew or shrank during the period.",
+            why:
+              "Active machines are the core revenue-producing base of the franchise. Growth generally creates more recurring revenue, while removals or inactive machines can slow that growth.",
             action:
               "Compare beginning machines, installations, removals, and ending machines. Make sure every machine counted as active is installed, producing revenue, assigned to the correct customer, and included in the service schedule.",
           },
@@ -2836,8 +2838,10 @@
             value: money(data.mrr),
             note: "Current customer lease revenue per month",
             section: "machines",
-            what: "The amount of customer lease revenue the active machine portfolio is expected to produce in a typical month at the end of the review period.",
-            why: "This is the franchise's predictable monthly revenue base. It helps separate dependable lease income from one-time installation or service revenue.",
+            what:
+              "The amount of customer lease revenue the active machine portfolio is expected to produce in a typical month at the end of the review period.",
+            why:
+              "This is the franchise's predictable monthly revenue base. It helps separate dependable lease income from one-time installation or service revenue.",
             action:
               "Compare this amount with ending active machines multiplied by the average lease payment. Investigate meaningful differences, including missing leases, billing errors, paused accounts, discounts, or machines that are active but not yet invoiced.",
           },
@@ -2846,8 +2850,10 @@
             value: money(val("avgLeaseRate")),
             note: `Benchmark: ${money(benchmarkValue("benchmarkLeaseRate"))}`,
             section: "machines",
-            what: "The average amount customers pay each month for each active leased machine.",
-            why: "It shows how effectively the machine portfolio is priced. A lower average payment means the franchise needs more machines to produce the same amount of recurring revenue.",
+            what:
+              "The average amount customers pay each month for each active leased machine.",
+            why:
+              "It shows how effectively the machine portfolio is priced. A lower average payment means the franchise needs more machines to produce the same amount of recurring revenue.",
             action:
               "Compare the average with the Iceworks benchmark and prior periods. Review unusually low-rate leases, discounts, bundled agreements, and whether new or renewed leases are being priced consistently.",
           },
@@ -2856,8 +2862,10 @@
             value: money(data.totalRevenue),
             note: `${money(data.revenuePerMachine)} / machine / month`,
             section: "financials",
-            what: "All lease revenue plus other service or installation revenue recorded during the review period.",
-            why: "Revenue shows the overall size of the business activity for the period and becomes the starting point for calculating margins, debt burden, and revenue per machine.",
+            what:
+              "All lease revenue plus other service or installation revenue recorded during the review period.",
+            why:
+              "Revenue shows the overall size of the business activity for the period and becomes the starting point for calculating margins, debt burden, and revenue per machine.",
             action:
               "Compare total revenue with the prior quarter, the same quarter last year, and the expected revenue from the active fleet. Separate recurring lease revenue from one-time revenue so a temporary increase is not mistaken for permanent growth.",
           },
@@ -2872,8 +2880,10 @@
                 : data.grossMargin >= 40
                   ? "warn"
                   : "bad",
-            what: "The percentage of revenue remaining after direct service and installation costs, royalties, and merchant-processing fees—but before operating overhead and debt payments.",
-            why: "This shows how efficiently revenue turns into money available to cover storage, insurance, vehicles, payroll, administration, debt payments, and profit.",
+            what:
+              "The percentage of revenue remaining after direct service and installation costs, royalties, and merchant-processing fees—but before operating overhead and debt payments.",
+            why:
+              "This shows how efficiently revenue turns into money available to cover storage, insurance, vehicles, payroll, administration, debt payments, and profit.",
             action:
               "When the percentage is lower than expected, review the underlying drivers: lease pricing, service frequency, repair and parts costs, installation costs, and other direct expenses. Compare both the percentage and the actual dollars remaining.",
           },
@@ -2888,8 +2898,10 @@
                 : data.serviceCostPerMachine <= data.benchmarkService * 1.35
                   ? "warn"
                   : "bad",
-            what: "The average monthly cost of preventive maintenance, cleaning, repairs, parts, and filters for each active machine during the review period.",
-            why: "It shows how expensive the active fleet is to maintain. Rising service cost can reduce the profitability of each lease even when revenue is growing.",
+            what:
+              "The average monthly cost of preventive maintenance, cleaning, repairs, parts, and filters for each active machine during the review period.",
+            why:
+              "It shows how expensive the active fleet is to maintain. Rising service cost can reduce the profitability of each lease even when revenue is growing.",
             action:
               "Compare the result with the watch level and prior periods. Identify repeat service calls, unusually expensive machines or customers, missed preventive maintenance, warranty opportunities, and costs that may have been entered in the wrong account.",
           },
@@ -2899,8 +2911,10 @@
             note: `Approx. ${money(data.ebitdaBeforeDebt / data.calculationMonths)} / month`,
             section: "financials",
             cls: data.ebitdaBeforeDebt >= 0 ? "good" : "bad",
-            what: "The operating earnings left after direct costs and operating overhead, but before required loan and credit-card payments. Owner distributions are tracked separately and are not treated as an operating expense here.",
-            why: "It shows whether the core business operation is producing earnings before the financing structure is considered. Those earnings must help cover debt payments, build cash, and support the owner.",
+            what:
+              "The operating earnings left after direct costs and operating overhead, but before required loan and credit-card payments. Owner distributions are tracked separately and are not treated as an operating expense here.",
+            why:
+              "It shows whether the core business operation is producing earnings before the financing structure is considered. Those earnings must help cover debt payments, build cash, and support the owner.",
             action:
               "Compare the approximate monthly amount with monthly debt service. If it is weak or negative, trace the cause through revenue, contribution margin, service costs, and overhead before focusing on owner draws or financing decisions.",
           },
@@ -2918,8 +2932,10 @@
                 : data.debtPaymentBurden <= data.benchmarkDebtBurden * 1.3
                   ? "warn"
                   : "bad",
-            what: "The total required monthly payments for all enabled loans, lines of credit, credit cards, and other business-related debt in the schedule.",
-            why: "Debt payments are recurring cash obligations. A business can appear profitable before debt and still experience cash pressure when required payments are too large for its current revenue and earnings.",
+            what:
+              "The total required monthly payments for all enabled loans, lines of credit, credit cards, and other business-related debt in the schedule.",
+            why:
+              "Debt payments are recurring cash obligations. A business can appear profitable before debt and still experience cash pressure when required payments are too large for its current revenue and earnings.",
             action:
               "Verify the payment amount against current statements and include every applicable obligation. Compare it with monthly EBITDA before debt, revenue, and expected changes such as an interest-rate adjustment or a loan beginning or ending.",
           },
@@ -2939,8 +2955,10 @@
                   : data.dscr < data.benchmarkDscr
                     ? "warn"
                     : "good",
-            what: "The amount of operating cash available under the selected review method for every $1.00 of required debt payments. For example, 1.25x means approximately $1.25 is available for each $1.00 due.",
-            why: "It shows whether the business currently produces enough operating earnings to cover required debt and still retain a cushion. A result below 1.00x means the modeled operating cash does not fully cover the payments.",
+            what:
+              "The amount of operating cash available under the selected review method for every $1.00 of required debt payments. For example, 1.25x means approximately $1.25 is available for each $1.00 due.",
+            why:
+              "It shows whether the business currently produces enough operating earnings to cover required debt and still retain a cushion. A result below 1.00x means the modeled operating cash does not fully cover the payments.",
             action:
               "Compare the result with the selected benchmark and confirm which calculation method the lender or CPA uses. Review whether revenue, margin, overhead, or the debt-payment structure is the main reason coverage is strong or weak.",
           },
@@ -2950,8 +2968,10 @@
             note: `Cushion gap: ${money(data.cashCushionDelta)}`,
             section: "cash",
             cls: data.cashCushionDelta >= 0 ? "good" : "bad",
-            what: "The cash held in the business bank accounts at the end of the review period, compared with the franchisee's desired minimum cash cushion.",
-            why: "Cash is what pays payroll, vendors, repairs, debt, and unexpected expenses. Profit on a report does not guarantee that enough cash is immediately available.",
+            what:
+              "The cash held in the business bank accounts at the end of the review period, compared with the franchisee's desired minimum cash cushion.",
+            why:
+              "Cash is what pays payroll, vendors, repairs, debt, and unexpected expenses. Profit on a report does not guarantee that enough cash is immediately available.",
             action:
               "Verify the balance against the bank and balance-sheet records, then review upcoming obligations. When cash is below the target cushion, identify the timing of collections, bills, debt payments, and planned equipment spending that will affect the next several weeks.",
           },
@@ -2961,8 +2981,10 @@
             note: `Excluding owner adds/draws: ${money(data.adjustedCashChange)}`,
             section: "cash",
             cls: data.cashChange >= 0 ? "good" : "bad",
-            what: "The difference between ending cash and beginning cash. The note also removes owner contributions and adds back owner draws to show the change that is more closely related to business activity.",
-            why: "It helps reveal whether the business itself is building or consuming cash and whether owner funding or distributions are masking the underlying movement.",
+            what:
+              "The difference between ending cash and beginning cash. The note also removes owner contributions and adds back owner draws to show the change that is more closely related to business activity.",
+            why:
+              "It helps reveal whether the business itself is building or consuming cash and whether owner funding or distributions are masking the underlying movement.",
             action:
               "Compare the reported change with the owner-adjusted change. Reconcile large differences to customer collections, unpaid bills, debt principal, equipment purchases, owner transactions, and timing differences that may not appear clearly on the profit-and-loss statement.",
           },
@@ -2980,8 +3002,10 @@
                 : data.cashRunway >= 1.5
                   ? "warn"
                   : "bad",
-            what: "An estimate of how many months the ending cash balance could support the current operating cash burn after debt payments. “Positive” means the modeled operation is not currently burning cash.",
-            why: "It estimates how much time the business has to respond if the current cash trend continues. A short runway can turn a manageable issue into an urgent one.",
+            what:
+              "An estimate of how many months the ending cash balance could support the current operating cash burn after debt payments. “Positive” means the modeled operation is not currently burning cash.",
+            why:
+              "It estimates how much time the business has to respond if the current cash trend continues. A short runway can turn a manageable issue into an urgent one.",
             action:
               "When runway is short, build a near-term cash forecast and review collection timing, recurring bills, debt payments, equipment commitments, and owner funding needs. A positive result should still be monitored and should not automatically be treated as excess spendable cash.",
           },
@@ -2990,8 +3014,10 @@
             value: money(data.totalDebt),
             note: `${money(data.debtPerMachine)} / active machine`,
             section: "debt",
-            what: "The combined current balance of every enabled debt row, including loans, lines of credit, and credit cards.",
-            why: "It shows the amount the business still owes and provides context for monthly payments, interest expense, leverage, and debt per active machine.",
+            what:
+              "The combined current balance of every enabled debt row, including loans, lines of credit, and credit cards.",
+            why:
+              "It shows the amount the business still owes and provides context for monthly payments, interest expense, leverage, and debt per active machine.",
             action:
               "Verify each balance against the most recent statement and confirm no obligations are missing. Review the balance per machine, maturity dates, and which large balances carry the highest rates or create the largest monthly payments.",
           },
@@ -3008,8 +3034,10 @@
                   : data.weightedApr <= 18
                     ? "warn"
                     : "bad",
-            what: "The blended annual percentage rate across all enabled debt, weighted so that larger balances have more influence than smaller balances.",
-            why: "It gives a more accurate view of the overall cost of borrowing than a simple average. A large high-rate balance can materially increase cash pressure over time.",
+            what:
+              "The blended annual percentage rate across all enabled debt, weighted so that larger balances have more influence than smaller balances.",
+            why:
+              "It gives a more accurate view of the overall cost of borrowing than a simple average. A large high-rate balance can materially increase cash pressure over time.",
             action:
               "Review the individual debt rows behind the blended rate and identify the large balances with the highest APRs. Any refinancing, payoff, or new-borrowing decision should be evaluated with the franchisee's lender, CPA, or financial advisor.",
           },
@@ -3024,8 +3052,10 @@
                 : data.arOver30Pct <= data.benchmarkAr * 2
                   ? "warn"
                   : "bad",
-            what: "The dollar amount and percentage of total accounts receivable that is more than 30 days overdue.",
-            why: "Revenue does not help cash flow until customers pay. Older receivables are more difficult to collect and may indicate billing, payment-method, customer-service, or collection problems.",
+            what:
+              "The dollar amount and percentage of total accounts receivable that is more than 30 days overdue.",
+            why:
+              "Revenue does not help cash flow until customers pay. Older receivables are more difficult to collect and may indicate billing, payment-method, customer-service, or collection problems.",
             action:
               "Review the aging report customer by customer. Confirm invoices were delivered and are accurate, document collection contact and promised payment dates, resolve billing disputes, and correct recurring autopay or invoicing problems.",
           },
@@ -3034,8 +3064,10 @@
             value: money(val("ownerContributions")),
             note: `Owner distributions entered: ${money(val("ownerDraws"))}`,
             section: "cash",
-            what: "Money the owner contributed to the business during the review period. Owner distributions are shown separately so contributions are not confused with operating revenue.",
-            why: "Owner cash can explain why the bank balance increased even when the operation consumed cash. Repeated contributions may indicate planned startup investment—or an operating shortfall that needs attention.",
+            what:
+              "Money the owner contributed to the business during the review period. Owner distributions are shown separately so contributions are not confused with operating revenue.",
+            why:
+              "Owner cash can explain why the bank balance increased even when the operation consumed cash. Repeated contributions may indicate planned startup investment—or an operating shortfall that needs attention.",
             action:
               "Compare owner contributions with net cash change excluding owner adds and draws. Document whether the funding was planned and temporary or is becoming recurring, and identify what the contribution was used to cover.",
           },
