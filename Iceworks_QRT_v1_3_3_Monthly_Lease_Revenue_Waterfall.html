@@ -1,0 +1,4547 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iceworks Franchisee Quarterly Review Tool v1.3.2</title>
+    <style>
+      :root {
+        --bg: #f3f7fb;
+        --surface: #ffffff;
+        --surface-2: #f7fbfd;
+        --ink: #13213b;
+        --muted: #65758b;
+        --line: #d8e4ed;
+        --brand: #087d90;
+        --brand-dark: #06465a;
+        --brand-soft: #e6f6f8;
+        --accent: #2f6bff;
+        --good: #0f8b5f;
+        --good-bg: #e8f7f1;
+        --warn: #b7791f;
+        --warn-bg: #fff5dd;
+        --bad: #bd3039;
+        --bad-bg: #fff0f1;
+        --purple: #6f52ed;
+        --navy: #101b33;
+        --shadow: 0 16px 38px rgba(19, 33, 59, 0.08);
+        --radius: 18px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(8, 125, 144, 0.18),
+            transparent 35rem
+          ),
+          linear-gradient(180deg, #eff6fa 0%, var(--bg) 35%, #ffffff 100%);
+      }
+      header {
+        color: #fff;
+        background: linear-gradient(135deg, #063645 0%, #087d90 72%);
+        padding: 34px 28px 76px;
+        border-bottom-left-radius: 28px;
+        border-bottom-right-radius: 28px;
+        box-shadow: var(--shadow);
+      }
+      .topbar {
+        max-width: 1480px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 22px;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(30px, 4vw, 50px);
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+        font-weight: 950;
+      }
+      .subtitle {
+        margin-top: 12px;
+        max-width: 870px;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 16px;
+        line-height: 1.45;
+        font-weight: 650;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 13px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.13);
+        color: rgba(255, 255, 255, 0.94);
+        font-size: 12px;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      main {
+        max-width: 1480px;
+        margin: -54px auto 70px;
+        padding: 0 24px;
+      }
+
+      .guide {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(216, 228, 237, 0.94);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: 18px;
+      }
+      .guide-head,
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 17px 20px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.72);
+      }
+      .guide-head h2,
+      .card-head h2 {
+        margin: 0;
+        font-size: 18px;
+        letter-spacing: -0.03em;
+      }
+      .guide-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        padding: 18px 20px;
+      }
+      .guide-step {
+        border: 1px solid var(--line);
+        background: var(--surface-2);
+        border-radius: 14px;
+        padding: 14px;
+        min-height: 96px;
+      }
+      .guide-step strong {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 5px;
+      }
+      .guide-step span {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.35;
+        font-weight: 650;
+      }
+
+      .workspace {
+        display: grid;
+        grid-template-columns: 218px minmax(430px, 0.88fr) minmax(640px, 1.42fr);
+        gap: 18px;
+        align-items: start;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(216, 228, 237, 0.94);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .card-body {
+        padding: 18px 20px;
+      }
+      .stack {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .right-sticky {
+        position: sticky;
+        top: 16px;
+        z-index: 2;
+      }
+
+      /* Persistent review-section navigator */
+      .review-nav {
+        position: sticky;
+        top: 16px;
+        z-index: 7;
+        align-self: start;
+        min-width: 0;
+      }
+      .review-nav-panel {
+        overflow: hidden;
+        border: 1px solid rgba(199, 216, 228, 0.96);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: 0 12px 30px rgba(19, 33, 59, 0.08);
+        backdrop-filter: blur(12px);
+      }
+      .review-nav-head {
+        padding: 14px 14px 12px;
+        border-bottom: 1px solid var(--line);
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
+      }
+      .review-nav-kicker {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 950;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .review-nav-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .review-nav-title {
+        margin: 0;
+        color: var(--brand-dark);
+        font-size: 15px;
+        line-height: 1.15;
+        letter-spacing: -0.025em;
+        font-weight: 950;
+      }
+      .review-nav-progress {
+        flex: 0 0 auto;
+        color: var(--brand-dark);
+        font-size: 10px;
+        font-weight: 950;
+        white-space: nowrap;
+      }
+      .review-nav-list {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        padding: 8px 0;
+      }
+      .review-nav-item {
+        position: relative;
+        display: grid;
+        grid-template-columns: 29px minmax(0, 1fr);
+        align-items: center;
+        gap: 8px;
+        min-height: 43px;
+        margin: 0 8px;
+        padding: 8px 9px 8px 7px;
+        border-left: 4px solid transparent;
+        border-radius: 0 10px 10px 0;
+        color: #75859a;
+        text-decoration: none;
+        opacity: 0.72;
+        transition:
+          color 0.16s ease,
+          opacity 0.16s ease,
+          background 0.16s ease,
+          border-color 0.16s ease,
+          transform 0.16s ease;
+      }
+      .review-nav-item:hover {
+        color: #425a73;
+        opacity: 1;
+        background: #f2f7fa;
+        transform: translateX(1px);
+      }
+      .review-nav-item:focus-visible {
+        outline: 3px solid rgba(8, 125, 144, 0.2);
+        outline-offset: 2px;
+        opacity: 1;
+      }
+      .review-nav-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 27px;
+        height: 27px;
+        border: 1px solid #cad9e4;
+        border-radius: 9px;
+        background: #f7fafc;
+        color: #7c8ca0;
+        font-size: 11px;
+        font-weight: 950;
+        transition:
+          color 0.16s ease,
+          background 0.16s ease,
+          border-color 0.16s ease,
+          box-shadow 0.16s ease;
+      }
+      .review-nav-label {
+        min-width: 0;
+        font-size: 12px;
+        line-height: 1.22;
+        font-weight: 690;
+        letter-spacing: -0.01em;
+      }
+      .review-nav-item.is-active,
+      .review-nav-item[aria-current="step"] {
+        color: var(--brand-dark);
+        opacity: 1;
+        border-left-color: var(--brand);
+        background: var(--brand-soft);
+        box-shadow: inset 0 0 0 1px rgba(8, 125, 144, 0.08);
+      }
+      .review-nav-item.is-active .review-nav-label,
+      .review-nav-item[aria-current="step"] .review-nav-label {
+        font-weight: 950;
+      }
+      .review-nav-item.is-active .review-nav-number,
+      .review-nav-item[aria-current="step"] .review-nav-number {
+        color: #fff;
+        border-color: var(--brand);
+        background: var(--brand);
+        box-shadow: 0 5px 12px rgba(8, 125, 144, 0.2);
+      }
+      .section {
+        scroll-margin-top: 28px;
+      }
+      .section.is-current-section:not(.is-highlighted) {
+        border-color: rgba(8, 125, 144, 0.34);
+      }
+      .section.is-current-section:not(.is-highlighted) > .section-title {
+        background: linear-gradient(
+          90deg,
+          rgba(230, 246, 248, 0.72) 0%,
+          rgba(255, 255, 255, 0) 72%
+        );
+      }
+
+      .section {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: visible;
+        background: #fff;
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s,
+          background 0.2s;
+      }
+      .section.is-highlighted {
+        border-color: #f59e0b;
+        box-shadow:
+          0 0 0 4px rgba(245, 158, 11, 0.16),
+          0 12px 30px rgba(245, 158, 11, 0.1);
+        background: #fffdf7;
+      }
+      .section-title {
+        padding: 14px 14px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .section-title {
+        cursor: default;
+      }
+      .section.is-complete {
+        border-color: rgba(15, 139, 95, 0.35);
+        background: linear-gradient(180deg, #ffffff 0%, #fbfffd 100%);
+      }
+      .section.is-complete > .section-title {
+        background: linear-gradient(
+          90deg,
+          rgba(232, 247, 241, 0.96) 0%,
+          rgba(255, 255, 255, 0.72) 76%
+        );
+        cursor: pointer;
+      }
+      .section.is-complete > .section-title h3 {
+        color: var(--good);
+      }
+      .section.is-collapsed > .section-body {
+        display: none;
+      }
+      .section-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 9px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: #f7fafc;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 950;
+        white-space: nowrap;
+      }
+      .section-status.complete {
+        border-color: rgba(15, 139, 95, 0.28);
+        background: var(--good-bg);
+        color: var(--good);
+      }
+      .section-status .checkmark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        background: var(--good);
+        color: #fff;
+        font-size: 11px;
+        line-height: 1;
+      }
+      .section-lock-note {
+        grid-column: 1 / -1;
+        display: none;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(15, 139, 95, 0.22);
+        background: var(--good-bg);
+        color: #245844;
+        font-size: 12px;
+        line-height: 1.35;
+        font-weight: 760;
+      }
+      .section.is-complete .section-lock-note {
+        display: block;
+      }
+      .section.is-complete input[readonly],
+      .section.is-complete textarea[readonly],
+      .section.is-complete select[disabled] {
+        background: #eef5f1;
+        border-color: #cfe4d8;
+        color: #52657b;
+      }
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+        transform: none;
+      }
+      .review-nav-item.is-complete {
+        opacity: 1;
+      }
+      .review-nav-item.is-complete .review-nav-number {
+        color: #fff;
+        border-color: var(--good);
+        background: var(--good);
+      }
+
+      .multi-select {
+        position: relative;
+      }
+      .market-toggle {
+        width: 100%;
+        min-height: 42px;
+        height: auto;
+        border: 1px solid #cbdce7;
+        border-radius: 12px;
+        background: #fff;
+        color: var(--ink);
+        padding: 10px 40px 10px 12px;
+        text-align: left;
+        font-weight: 760;
+        line-height: 1.25;
+        position: relative;
+      }
+      .market-toggle::after {
+        content: "▾";
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .market-menu {
+        position: absolute;
+        z-index: 80;
+        display: none;
+        width: 100%;
+        max-height: 285px;
+        overflow: auto;
+        margin-top: 6px;
+        padding: 8px;
+        border: 1px solid #cbdce7;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 16px 38px rgba(19, 33, 59, 0.14);
+      }
+      .multi-select.open .market-menu {
+        display: grid;
+        gap: 5px;
+      }
+      .market-option {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+        padding: 8px 9px;
+        border-radius: 10px;
+        color: #425a73;
+        font-size: 13px;
+        font-weight: 760;
+        cursor: pointer;
+      }
+      .market-option:hover {
+        background: var(--surface-2);
+        color: var(--brand-dark);
+      }
+      .market-option input {
+        width: 17px;
+        height: 17px;
+        margin: 0;
+        flex: 0 0 auto;
+      }
+
+      .royalty-calculator {
+        padding: 12px;
+        border: 1px solid #cbdce7;
+        border-radius: 14px;
+        background: var(--surface-2);
+      }
+      .royalty-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(110px, 0.45fr) minmax(0, 1fr);
+        gap: 12px;
+      }
+      .section-title h3 {
+        margin: 0;
+        font-size: 17px;
+        line-height: 1.12;
+        letter-spacing: -0.035em;
+        color: var(--brand-dark);
+      }
+      .section-title .tag {
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.03em;
+        color: var(--muted);
+        text-align: right;
+        white-space: nowrap;
+      }
+      .section-body {
+        padding: 14px;
+      }
+
+      .inputs-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .full {
+        grid-column: 1 / -1;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.005em;
+        color: #536782;
+        line-height: 1.18;
+        margin: 0 0 6px;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid #cbdce7;
+        border-radius: 12px;
+        background: #fff;
+        color: var(--ink);
+        outline: none;
+        font: inherit;
+        font-size: 14px;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      input,
+      select {
+        height: 42px;
+        padding: 0 12px;
+      }
+      textarea {
+        min-height: 84px;
+        padding: 10px 12px;
+        resize: vertical;
+        line-height: 1.35;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 4px rgba(8, 125, 144, 0.1);
+      }
+      input[type="checkbox"] {
+        width: 17px;
+        height: 17px;
+        padding: 0;
+      }
+      .checkbox-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        font-size: 13px;
+        color: var(--ink);
+        font-weight: 800;
+        line-height: 1.3;
+      }
+      .data-source-checklist {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px 12px;
+        padding: 12px;
+        border: 1px solid #cbdce7;
+        border-radius: 12px;
+        background: #fff;
+      }
+      .data-source-option {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+        padding: 8px 9px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        color: #536782;
+        font-size: 12px;
+        font-weight: 850;
+        line-height: 1.25;
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          border-color 0.15s,
+          color 0.15s;
+      }
+      .data-source-option:hover {
+        border-color: var(--line);
+        background: var(--surface-2);
+        color: var(--brand-dark);
+      }
+      .data-source-option:has(input:checked) {
+        border-color: rgba(8, 125, 144, 0.3);
+        background: var(--brand-soft);
+        color: var(--brand-dark);
+      }
+      .data-source-option input {
+        flex: 0 0 auto;
+        margin: 0;
+      }
+
+      .hint {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+        font-weight: 650;
+      }
+
+      .q {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        min-width: 18px;
+        border-radius: 999px;
+        border: 1px solid rgba(8, 125, 144, 0.38);
+        background: #eefbfc;
+        color: var(--brand-dark);
+        font-size: 12px;
+        font-weight: 950;
+        cursor: help;
+        user-select: none;
+      }
+      .tooltip {
+        position: fixed;
+        width: min(460px, calc(100vw - 24px));
+        max-width: 460px;
+        max-height: min(560px, calc(100vh - 24px));
+        overflow-y: auto;
+        padding: 12px 13px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 14px;
+        background: rgba(22, 30, 48, 0.98);
+        color: #fff;
+        font-size: 12px;
+        line-height: 1.42;
+        font-weight: 720;
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+        z-index: 99999;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(6px);
+        transition:
+          opacity 0.1s,
+          visibility 0.1s,
+          transform 0.1s;
+      }
+      .tooltip.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      .tooltip.metric-tooltip {
+        padding: 0;
+        background: rgba(17, 27, 48, 0.99);
+      }
+      .metric-tooltip-head {
+        padding: 14px 16px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .metric-tooltip-kicker {
+        display: block;
+        margin-bottom: 3px;
+        color: #9fdce4;
+        font-size: 10px;
+        font-weight: 950;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+      .metric-tooltip-title {
+        display: block;
+        color: #fff;
+        font-size: 15px;
+        line-height: 1.2;
+        font-weight: 950;
+        letter-spacing: -0.02em;
+      }
+      .metric-tooltip-body {
+        display: grid;
+        gap: 0;
+        padding: 4px 16px 8px;
+      }
+      .metric-tooltip-section {
+        padding: 11px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .metric-tooltip-section:last-child {
+        border-bottom: 0;
+      }
+      .metric-tooltip-section strong {
+        display: block;
+        margin-bottom: 4px;
+        color: #9fdce4;
+        font-size: 11px;
+        line-height: 1.2;
+        font-weight: 950;
+      }
+      .metric-tooltip-section span {
+        display: block;
+        color: rgba(255, 255, 255, 0.93);
+        font-size: 12px;
+        line-height: 1.46;
+        font-weight: 700;
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 10px 14px;
+        background: #e8f0f6;
+        color: var(--ink);
+        font-weight: 950;
+        cursor: pointer;
+        transition:
+          transform 0.12s,
+          opacity 0.12s,
+          background 0.12s;
+      }
+      button:hover {
+        transform: translateY(-1px);
+        opacity: 0.96;
+      }
+      .primary {
+        background: var(--brand);
+        color: #fff;
+      }
+      .secondary {
+        background: var(--brand-soft);
+        color: var(--brand-dark);
+      }
+      .danger {
+        background: var(--bad-bg);
+        color: var(--bad);
+      }
+      .ghost {
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--brand-dark);
+        padding: 8px 12px;
+      }
+
+      .dashboard-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.83);
+      }
+      .dashboard-head h2 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: -0.035em;
+      }
+      .dashboard-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 950;
+        background: var(--surface-2);
+        color: var(--muted);
+        border: 1px solid var(--line);
+        white-space: nowrap;
+      }
+      .status-pill.good {
+        color: var(--good);
+        background: var(--good-bg);
+        border-color: rgba(15, 139, 95, 0.25);
+      }
+      .status-pill.warn {
+        color: var(--warn);
+        background: var(--warn-bg);
+        border-color: rgba(183, 121, 31, 0.25);
+      }
+      .status-pill.bad {
+        color: var(--bad);
+        background: var(--bad-bg);
+        border-color: rgba(189, 48, 57, 0.25);
+      }
+      .status-pill.neutral {
+        color: #536782;
+        background: #eef3f7;
+        border-color: #cbd8e2;
+      }
+      .kpi .value.neutral {
+        color: #6b7b8f;
+      }
+      .section-confirmation {
+        grid-column: 1 / -1;
+        margin-top: 2px;
+        padding: 11px 12px;
+        border: 1px dashed #c4d5e1;
+        border-radius: 12px;
+        background: #f7fafc;
+      }
+      .section-confirmation label {
+        margin: 0;
+        color: #425a73;
+        cursor: pointer;
+      }
+      .section-confirmation:has(input:checked) {
+        border-color: rgba(15, 139, 95, 0.35);
+        background: var(--good-bg);
+      }
+      input[readonly],
+      select[disabled] {
+        background: #f2f6f9;
+        color: #607287;
+        cursor: default;
+      }
+      .benchmark-toolbar {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 11px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--surface-2);
+      }
+      .benchmark-toolbar .small-muted {
+        max-width: 520px;
+      }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        padding: 18px 20px 14px;
+      }
+      .kpi {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
+        padding: 14px;
+        min-width: 0;
+        min-height: 132px;
+        overflow: hidden;
+        container-type: inline-size;
+        cursor: pointer;
+        transition:
+          transform 0.14s,
+          border-color 0.14s,
+          box-shadow 0.14s,
+          background 0.14s;
+      }
+      .kpi:hover {
+        transform: translateY(-1px);
+        border-color: rgba(8, 125, 144, 0.35);
+        box-shadow: 0 8px 24px rgba(19, 33, 59, 0.07);
+      }
+      .kpi.is-selected {
+        border-color: #f59e0b;
+        background: #fffaf0;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.14);
+      }
+      .kpi .name {
+        color: #536782;
+        font-size: 12px;
+        font-weight: 950;
+        min-height: 32px;
+        line-height: 1.2;
+      }
+      .kpi .value {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 8px;
+        font-size: 26px;
+        font-size: clamp(21px, 17cqi, 32px);
+        line-height: 1.02;
+        font-weight: 1000;
+        letter-spacing: -0.055em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: clip;
+        color: var(--navy);
+      }
+
+      @container (max-width: 140px) {
+        .kpi .value {
+          font-size: 21px;
+          letter-spacing: -0.065em;
+        }
+      }
+      .kpi .value.good {
+        color: var(--good);
+      }
+      .kpi .value.warn {
+        color: var(--warn);
+      }
+      .kpi .value.bad {
+        color: var(--bad);
+      }
+      .kpi .note {
+        margin-top: 6px;
+        color: #5b6c83;
+        font-size: 12px;
+        line-height: 1.3;
+        font-weight: 760;
+      }
+      .kpi .link-note {
+        margin-top: 8px;
+        color: var(--brand-dark);
+        font-size: 11px;
+        font-weight: 950;
+      }
+
+      .chart-panel {
+        padding: 0 20px 20px;
+      }
+      .chart-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .chart-title {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        font-weight: 950;
+        color: var(--navy);
+      }
+      .chart-subtitle {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+        font-weight: 700;
+        max-width: 560px;
+      }
+      .chart-wrap {
+        height: 340px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        padding: 12px;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .chart-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .chart-summary {
+        border: 1px solid var(--line);
+        background: var(--surface-2);
+        border-radius: 14px;
+        padding: 10px 12px;
+      }
+      .chart-summary .label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .chart-summary .value {
+        margin-top: 5px;
+        color: var(--navy);
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 950;
+        letter-spacing: -0.04em;
+      }
+      .chart-summary .value.good {
+        color: var(--good);
+      }
+      .chart-summary .value.bad {
+        color: var(--bad);
+      }
+      .chart-summary .note {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.35;
+        font-weight: 750;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 900;
+      }
+      .swatch {
+        width: 13px;
+        height: 4px;
+        border-radius: 999px;
+        background: var(--brand);
+      }
+
+      .review-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+      }
+      .table-scroll {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 10px 8px;
+        text-align: right;
+        vertical-align: middle;
+      }
+      th {
+        background: var(--surface-2);
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+      td:first-child,
+      th:first-child {
+        text-align: left;
+      }
+      .debt-table input,
+      .debt-table select {
+        height: 34px;
+        border-radius: 10px;
+        padding: 0 8px;
+        font-size: 12px;
+        min-width: 96px;
+      }
+      .debt-table input[readonly] {
+        background: #f4f8fb;
+        color: var(--muted);
+        cursor: default;
+      }
+      .hint-box {
+        padding: 10px 12px;
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        color: var(--muted);
+        background: #f9fcfd;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .debt-table input[type="checkbox"] {
+        min-width: unset;
+      }
+      .flag-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .flag {
+        border: 1px solid var(--line);
+        border-left-width: 5px;
+        border-radius: 14px;
+        padding: 12px 13px;
+        background: #fff;
+      }
+      .flag.good {
+        border-left-color: var(--good);
+        background: var(--good-bg);
+      }
+      .flag.warn {
+        border-left-color: var(--warn);
+        background: var(--warn-bg);
+      }
+      .flag.bad {
+        border-left-color: var(--bad);
+        background: var(--bad-bg);
+      }
+      .flag strong {
+        display: block;
+        margin-bottom: 3px;
+      }
+      .flag span {
+        color: #52657b;
+        font-size: 13px;
+        line-height: 1.35;
+        font-weight: 700;
+      }
+
+      .summary-card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        background: #fff;
+      }
+      .summary-card h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+        letter-spacing: -0.02em;
+        color: var(--brand-dark);
+      }
+      .small-muted {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.4;
+        font-weight: 650;
+      }
+      .footer-note {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+        font-weight: 650;
+      }
+      .divider {
+        height: 1px;
+        background: var(--line);
+        margin: 6px 0;
+      }
+
+      @media (max-width: 1380px) {
+        .workspace {
+          grid-template-columns: minmax(430px, 0.88fr) minmax(600px, 1.42fr);
+        }
+        .review-nav {
+          grid-column: 1 / -1;
+          position: sticky;
+          top: 8px;
+          z-index: 20;
+        }
+        .review-nav-panel {
+          border-radius: 14px;
+          box-shadow: 0 10px 26px rgba(19, 33, 59, 0.1);
+        }
+        .review-nav-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 9px 13px;
+        }
+        .review-nav-kicker {
+          display: none;
+        }
+        .review-nav-title-row {
+          width: 100%;
+        }
+        .review-nav-list {
+          flex-direction: row;
+          gap: 6px;
+          overflow-x: auto;
+          padding: 7px 8px 9px;
+          scrollbar-width: thin;
+          overscroll-behavior-inline: contain;
+        }
+        .review-nav-item {
+          flex: 0 0 auto;
+          grid-template-columns: 26px auto;
+          min-width: 190px;
+          min-height: 40px;
+          margin: 0;
+          padding: 7px 10px;
+          border-left: 0;
+          border-bottom: 3px solid transparent;
+          border-radius: 10px;
+        }
+        .review-nav-item.is-active,
+        .review-nav-item[aria-current="step"] {
+          border-left-color: transparent;
+          border-bottom-color: var(--brand);
+        }
+        .review-nav-number {
+          width: 25px;
+          height: 25px;
+          border-radius: 8px;
+        }
+        .section {
+          scroll-margin-top: 142px;
+        }
+      }
+      @media (max-width: 1220px) {
+        .workspace,
+        .review-grid {
+          grid-template-columns: 1fr;
+        }
+        .right-sticky {
+          position: static;
+        }
+        .kpi-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+      @media (max-width: 820px) {
+        main {
+          padding: 0 12px;
+        }
+        header {
+          padding: 28px 18px 70px;
+        }
+        .topbar {
+          flex-direction: column;
+        }
+        .guide-grid,
+        .inputs-grid,
+        .kpi-grid,
+        .data-source-checklist,
+        .royalty-grid {
+          grid-template-columns: 1fr;
+        }
+        .dashboard-head {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .dashboard-controls {
+          justify-content: flex-start;
+        }
+        .review-nav-head {
+          padding: 8px 11px;
+        }
+        .review-nav-title {
+          font-size: 14px;
+        }
+        .review-nav-progress {
+          font-size: 9px;
+        }
+        .review-nav-list {
+          padding: 6px 7px 8px;
+        }
+        .review-nav-item {
+          min-width: 174px;
+        }
+        .review-nav-label {
+          font-size: 11px;
+        }
+        .section {
+          scroll-margin-top: 132px;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+        }
+        header,
+        .guide,
+        .card {
+          box-shadow: none;
+        }
+        button,
+        .review-nav,
+        .chart-panel {
+          display: none !important;
+        }
+        main {
+          margin: 0;
+          max-width: unset;
+          padding: 0;
+        }
+        header {
+          border-radius: 0;
+          padding: 22px;
+        }
+        .workspace,
+        .review-grid {
+          display: block;
+        }
+        .card,
+        .guide {
+          margin-bottom: 14px;
+          break-inside: avoid;
+        }
+        .right-sticky {
+          position: static;
+        }
+        .kpi-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .table-scroll {
+          overflow: visible;
+        }
+        .debt-table {
+          font-size: 9px;
+        }
+        .debt-table input,
+        .debt-table select {
+          min-width: 64px;
+          font-size: 9px;
+          padding: 0 3px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="topbar">
+        <div>
+          <h1>Iceworks Franchisee Quarterly Review Tool v1.3.2</h1>
+          <div class="subtitle">
+            Internal franchisor review tool for current franchisees. Review
+            actual operating performance, cash, debt, machines, A/R, and
+            discussion flags.
+          </div>
+        </div>
+        <div class="pill">Internal review · workflow polish v1.3.2</div>
+      </div>
+    </header>
+
+    <main>
+      <section class="guide">
+        <div class="guide-head">
+          <h2>
+            Plain-English Review Flow
+            <span
+              class="q"
+              data-help="This is the path for the quarterly call. First we enter basic facts, then real numbers, then loans and cards, then we review the scoreboard together."
+              >?</span
+            >
+          </h2>
+          <span class="small-muted"
+            >Hover or click every ? for plain-English help</span
+          >
+        </div>
+        <div class="guide-grid">
+          <div class="guide-step">
+            <strong>1. Set the review period.</strong
+            ><span
+              >Pick the franchisee, market, quarter, and dates we are
+              reviewing.</span
+            >
+          </div>
+          <div class="guide-step">
+            <strong>2. Enter actual numbers.</strong
+            ><span
+              >Use QuickBooks, Icebox, bank statements, and credit card
+              statements.</span
+            >
+          </div>
+          <div class="guide-step">
+            <strong>3. Review health signals.</strong
+            ><span
+              >The dashboard shows what looks strong, weak, or worth
+              discussing.</span
+            >
+          </div>
+          <div class="guide-step">
+            <strong>4. Agree on next steps.</strong
+            ><span
+              >Document discussion items, owner commitments, and follow-up items
+              for next quarter.</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <aside class="review-nav" aria-label="Quarterly review input sections">
+          <nav class="review-nav-panel" aria-label="Review Sections">
+            <div class="review-nav-head">
+              <span class="review-nav-kicker">Input workflow</span>
+              <div class="review-nav-title-row">
+                <h2 class="review-nav-title">Review Sections</h2>
+                <span
+                  class="review-nav-progress"
+                  id="reviewNavProgress"
+                  aria-live="polite"
+                  >1 of 8</span
+                >
+              </div>
+            </div>
+            <div class="review-nav-list" id="reviewNavList">
+              <a
+                class="review-nav-item is-active"
+                href="#setupSection"
+                data-review-target="setupSection"
+                aria-current="step"
+              >
+                <span class="review-nav-number">1</span>
+                <span class="review-nav-label">Review Setup</span>
+              </a>
+              <a
+                class="review-nav-item"
+                href="#machinesSection"
+                data-review-target="machinesSection"
+              >
+                <span class="review-nav-number">2</span>
+                <span class="review-nav-label"
+                  >Franchisee Operating Metrics</span
+                >
+              </a>
+              <a
+                class="review-nav-item"
+                href="#financialSection"
+                data-review-target="financialSection"
+              >
+                <span class="review-nav-number">3</span>
+                <span class="review-nav-label"
+                  >QuickBooks Financial Summary</span
+                >
+              </a>
+              <a
+                class="review-nav-item"
+                href="#cashSection"
+                data-review-target="cashSection"
+              >
+                <span class="review-nav-number">4</span>
+                <span class="review-nav-label">Cash &amp; Owner Capital</span>
+              </a>
+              <a
+                class="review-nav-item"
+                href="#debtSection"
+                data-review-target="debtSection"
+              >
+                <span class="review-nav-number">5</span>
+                <span class="review-nav-label"
+                  >Debt / Credit Card Schedule</span
+                >
+              </a>
+              <a
+                class="review-nav-item"
+                href="#arSection"
+                data-review-target="arSection"
+              >
+                <span class="review-nav-number">6</span>
+                <span class="review-nav-label"
+                  >Accounts Receivable &amp; Collections</span
+                >
+              </a>
+              <a
+                class="review-nav-item"
+                href="#benchmarkSection"
+                data-review-target="benchmarkSection"
+              >
+                <span class="review-nav-number">7</span>
+                <span class="review-nav-label">Benchmark Settings</span>
+              </a>
+              <a
+                class="review-nav-item"
+                href="#notesSection"
+                data-review-target="notesSection"
+              >
+                <span class="review-nav-number">8</span>
+                <span class="review-nav-label"
+                  >Review Notes &amp; Follow-Up</span
+                >
+              </a>
+            </div>
+          </nav>
+        </aside>
+
+        <section class="card" id="inputCard">
+          <div class="card-head">
+            <h2>
+              Review Inputs
+              <span
+                class="q"
+                data-help="This left side is where we enter the facts. Think of it like putting all the ingredients on the counter before we decide what the recipe looks like."
+                >?</span
+              >
+            </h2>
+            <span class="small-muted" id="reviewLabel">Quarterly review</span>
+          </div>
+          <div class="card-body stack">
+            <section class="section" id="setupSection" data-section="setup">
+              <div class="section-title">
+                <h3>
+                  1. Review Setup
+                  <span
+                    class="q"
+                    data-help="Who are we reviewing, and what time period are we looking at? This keeps every number tied to a specific quarter."
+                    >?</span
+                  >
+                </h3>
+                <span class="tag">basic facts</span>
+              </div>
+              <div class="section-body inputs-grid">
+                <div class="section-lock-note">✓ This section is marked complete. Inputs are locked until the completion box is unchecked.</div>
+                <div>
+                  <label
+                    >Owner name
+                    <span
+                      class="q"
+                      data-help="The owner or ownership group we are reviewing."
+                      >?</span
+                    ></label
+                  ><input id="ownerName" value="" />
+                </div>
+                <div>
+                  <label
+                    >Market(s)
+                    <span
+                      class="q"
+                      data-help="Select every market or territory included in this review. Use multiple selections when one franchisee owns more than one territory."
+                      >?</span
+                    ></label
+                  >
+                  <div class="multi-select" id="marketMulti">
+                    <button
+                      type="button"
+                      class="market-toggle"
+                      id="marketToggle"
+                      aria-haspopup="listbox"
+                      aria-expanded="false"
+                    >
+                      Select market(s)
+                    </button>
+                    <div class="market-menu" id="marketMenu" role="listbox" aria-label="Market selections">
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Denver" />Denver</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Houston" />Houston</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Phoenix" />Phoenix</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Austin" />Austin</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="San Antonio" />San Antonio</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Waco" />Waco</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Dallas" />Dallas</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="El Paso" />El Paso</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Oklahoma City" />Oklahoma City</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Tulsa" />Tulsa</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Baton Rouge" />Baton Rouge</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Texas Expansion" />Texas Expansion</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="West Coast Expansion" />West Coast Expansion</label>
+                      <label class="market-option"><input type="checkbox" class="market-choice" value="Other" />Other</label>
+                    </div>
+                    <input id="marketName" type="hidden" value="" />
+                  </div>
+                  <div class="hint">Select one or more markets included in the review.</div>
+                </div>
+                <div>
+                  <label
+                    >Review period name
+                    <span
+                      class="q"
+                      data-help="Example: Q2 2026 or January-March 2027."
+                      >?</span
+                    ></label
+                  ><input id="periodName" value="" />
+                </div>
+                <div>
+                  <label
+                    >Months in review period (auto-calculated)
+                    <span
+                      class="q"
+                      data-help="The tool calculates the number of calendar months from the review-period start and end dates."
+                      >?</span
+                    ></label
+                  ><input
+                    id="periodMonths"
+                    type="number"
+                    min="0"
+                    step="1"
+                    value="0"
+                    readonly
+                  />
+                </div>
+                <div>
+                  <label
+                    >Review period start
+                    <span
+                      class="q"
+                      data-help="The first day of the period being reviewed."
+                      >?</span
+                    ></label
+                  ><input id="periodStart" type="date" value="" />
+                </div>
+                <div>
+                  <label
+                    >Review period end
+                    <span
+                      class="q"
+                      data-help="The last day of the period being reviewed."
+                      >?</span
+                    ></label
+                  ><input id="periodEnd" type="date" value="" />
+                </div>
+                <div>
+                  <label
+                    >Franchise start date
+                    <span
+                      class="q"
+                      data-help="When the franchise started operating. This helps compare performance based on how mature the business is."
+                      >?</span
+                    ></label
+                  ><input id="franchiseStart" type="date" value="" />
+                </div>
+                <div>
+                  <label
+                    >Review date
+                    <span
+                      class="q"
+                      data-help="The day you are holding the quarterly review call or meeting."
+                      >?</span
+                    ></label
+                  ><input id="reviewDate" type="date" value="" />
+                </div>
+                <div class="full">
+                  <label>
+                    Data sources used
+                    <span
+                      class="q"
+                      data-help="Check each report or system used to prepare this quarterly review."
+                      >?</span
+                    >
+                  </label>
+                  <div
+                    class="data-source-checklist"
+                    role="group"
+                    aria-label="Data sources used"
+                  >
+                    <label
+                      class="data-source-option"
+                      for="dataSourceQuickBooksPL"
+                    >
+                      <input id="dataSourceQuickBooksPL" type="checkbox" />
+                      <span>QuickBooks P&amp;L</span>
+                    </label>
+                    <label
+                      class="data-source-option"
+                      for="dataSourceBalanceSheet"
+                    >
+                      <input id="dataSourceBalanceSheet" type="checkbox" />
+                      <span>Balance Sheet</span>
+                    </label>
+                    <label class="data-source-option" for="dataSourceArAging">
+                      <input id="dataSourceArAging" type="checkbox" />
+                      <span>A/R Aging</span>
+                    </label>
+                    <label
+                      class="data-source-option"
+                      for="dataSourceTransactionDetail"
+                    >
+                      <input id="dataSourceTransactionDetail" type="checkbox" />
+                      <span>Transaction Detail</span>
+                    </label>
+                    <label
+                      class="data-source-option"
+                      for="dataSourceIceboxMachines"
+                    >
+                      <input id="dataSourceIceboxMachines" type="checkbox" />
+                      <span>Icebox machines</span>
+                    </label>
+                    <label
+                      class="data-source-option"
+                      for="dataSourceIceboxLeases"
+                    >
+                      <input id="dataSourceIceboxLeases" type="checkbox" />
+                      <span>Icebox leases</span>
+                    </label>
+                    <label class="data-source-option" for="dataSourceOther">
+                      <input id="dataSourceOther" type="checkbox" />
+                      <span>Other</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="section-confirmation">
+                  <label class="checkbox-row" for="setupReviewed">
+                    <input id="setupReviewed" type="checkbox" />
+                    <span>Review Setup has been checked and is complete.</span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="section"
+              id="machinesSection"
+              data-section="machines"
+            >
+              <div class="section-title">
+                <h3>
+                  2. Franchisee Operating Metrics
+                  <span
+                    class="q"
+                    data-help="These numbers tell us how many machines are working for the business and how much each machine is producing."
+                    >?</span
+                  >
+                </h3>
+                <span class="tag">Icebox / operations</span>
+              </div>
+              <div class="section-body inputs-grid">
+                <div class="section-lock-note">✓ This section is marked complete. Inputs are locked until the completion box is unchecked.</div>
+                <div>
+                  <label
+                    >Active machines at beginning
+                    <span
+                      class="q"
+                      data-help="How many machines were leased to customers at the start of the quarter."
+                      >?</span
+                    ></label
+                  ><input id="machinesStart" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Active machines at end
+                    <span
+                      class="q"
+                      data-help="How many machines were leased to customers at the end of the quarter."
+                      >?</span
+                    ></label
+                  ><input id="machinesEnd" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >New machines installed this period
+                    <span
+                      class="q"
+                      data-help="How many machines were added and started producing lease revenue during the period."
+                      >?</span
+                    ></label
+                  ><input id="machinesAdded" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Machines removed / churned this period
+                    <span
+                      class="q"
+                      data-help="Machines that stopped producing lease revenue because the customer cancelled, the machine was removed, or the lease ended."
+                      >?</span
+                    ></label
+                  ><input
+                    id="machinesRemoved"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
+                </div>
+                <div>
+                  <label
+                    >Average monthly customer lease payment ($)
+                    <span
+                      class="q"
+                      data-help="The average amount customers pay each month for each leased machine."
+                      >?</span
+                    ></label
+                  ><input id="avgLeaseRate" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Ending monthly recurring lease revenue (MRR) ($)
+                    <span
+                      class="q"
+                      data-help="This is not the total lease revenue collected during the quarter. It is the monthly lease-revenue run rate at the end of the review period: active leased machines multiplied by their monthly lease payments."
+                      >?</span
+                    ></label
+                  ><input id="currentMRR" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >PMs completed
+                    <span
+                      class="q"
+                      data-help="The number of scheduled preventive maintenance or cleaning visits completed this period."
+                      >?</span
+                    ></label
+                  ><input id="pmVisits" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Repair calls completed
+                    <span
+                      class="q"
+                      data-help="Unplanned service calls completed this period. A high number may explain high repair costs."
+                      >?</span
+                    ></label
+                  ><input id="repairCalls" type="number" step="1" value="0" />
+                </div>
+                <div class="section-confirmation">
+                  <label class="checkbox-row" for="machinesReviewed">
+                    <input id="machinesReviewed" type="checkbox" />
+                    <span
+                      >Operating metrics have been reviewed; any zero values are
+                      intentional.</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="section"
+              id="financialSection"
+              data-section="financials"
+            >
+              <div class="section-title">
+                <h3>
+                  3. QuickBooks Financial Summary
+                  <span
+                    class="q"
+                    data-help="Enter the main totals from QuickBooks for the review period. We are not trying to replace QuickBooks; we are summarizing it for discussion."
+                    >?</span
+                  >
+                </h3>
+                <span class="tag">P&L summary</span>
+              </div>
+              <div class="section-body inputs-grid">
+                <div class="section-lock-note">✓ This section is marked complete. Inputs are locked until the completion box is unchecked.</div>
+                <div>
+                  <label
+                    >Lease revenue ($)
+                    <span
+                      class="q"
+                      data-help="Customer lease revenue for machines during the review period."
+                      >?</span
+                    ></label
+                  ><input id="leaseRevenue" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Other service / install revenue ($)
+                    <span
+                      class="q"
+                      data-help="Any non-lease revenue, such as service jobs, install fees, or other customer charges."
+                      >?</span
+                    ></label
+                  ><input id="otherRevenue" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >PM / cleaning cost ($)
+                    <span
+                      class="q"
+                      data-help="Cost for routine cleaning and preventive maintenance during the period."
+                      >?</span
+                    ></label
+                  ><input id="pmCost" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Repairs, parts, filter cartridges cost ($)
+                    <span
+                      class="q"
+                      data-help="Cost for repairs, replacement parts, filter cartridges used in PMs or repairs, and service materials. Exclude full filter kits or filter housings purchased with equipment POs."
+                      >?</span
+                    ></label
+                  ><input
+                    id="repairPartsCost"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
+                </div>
+                <div>
+                  <label
+                    >Install / job direct costs expensed this period ($)
+                    <span
+                      class="q"
+                      data-help="Expense only labor, materials, or subcontractor costs tied to billable jobs. Exclude equipment, freight, and eligible placement costs that were capitalized as fixed assets."
+                      >?</span
+                    ></label
+                  ><input
+                    id="installDirectCost"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
+                </div>
+                <div>
+                  <label
+                    >Other direct costs ($)
+                    <span
+                      class="q"
+                      data-help="Any other costs that rise because machines are being installed or serviced."
+                      >?</span
+                    ></label
+                  ><input
+                    id="otherDirectCost"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
+                </div>
+                <div class="full royalty-calculator">
+                  <label>
+                    Royalty calculation
+                    <span
+                      class="q"
+                      data-help="QuickBooks may not show the royalty invoice inside the same quarter because Iceworks often invoices royalties after the quarter ends. Enter gross sales from the Sales by Customer Summary and the royalty rate, and the tool will calculate the estimated royalty amount."
+                      >?</span
+                    >
+                  </label>
+                  <div class="royalty-grid">
+                    <div>
+                      <label
+                        >Gross sales for royalty calculation ($)
+                        <span
+                          class="q"
+                          data-help="Use total gross sales from the Sales by Customer Summary for the selected review period."
+                          >?</span
+                        ></label
+                      ><input id="grossSalesForRoyalty" type="number" step="1" value="0" />
+                    </div>
+                    <div>
+                      <label
+                        >Royalty %
+                        <span
+                          class="q"
+                          data-help="Enter the franchisee's royalty percentage for this review period. Most reviews will use 9% unless the franchisee qualifies for a lower royalty tier."
+                          >?</span
+                        ></label
+                      ><input id="royaltyPercent" type="number" step="0.1" value="9" />
+                    </div>
+                    <div>
+                      <label
+                        >Calculated royalties / franchise fees ($)
+                        <span
+                          class="q"
+                          data-help="This is calculated automatically as gross sales multiplied by the royalty percentage."
+                          >?</span
+                        ></label
+                      ><input id="royaltyCost" type="number" step="1" value="0" readonly />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label
+                    >Merchant / bank processing fees ($)
+                    <span
+                      class="q"
+                      data-help="Fees paid to collect customer payments, such as card or ACH processing."
+                      >?</span
+                    ></label
+                  ><input id="merchantFees" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Total operating overhead during review period ($)
+                    <span
+                      class="q"
+                      data-help="Enter the full review-period total for storage, insurance, phone, software, vehicle, accounting, marketing, office expenses, and other operating overhead—not a single monthly amount."
+                      >?</span
+                    ></label
+                  ><input id="fixedOverhead" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Owner compensation included in overhead ($)
+                    <span
+                      class="q"
+                      data-help="Enter owner wages or guaranteed payments already included in operating overhead. This amount is used only if the lender-style addback method is selected."
+                      >?</span
+                    ></label
+                  ><input
+                    id="ownerCompensation"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
+                </div>
+                <div>
+                  <label
+                    >Owner distributions / draws ($)
+                    <span
+                      class="q"
+                      data-help="Cash distributions taken by the owner. Draws affect cash movement but are not treated as an operating expense or automatically deducted from DSCR."
+                      >?</span
+                    ></label
+                  ><input id="ownerDraws" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Debt coverage method
+                    <span
+                      class="q"
+                      data-help="Internal conservative uses reported EBITDA. Lender-style addback adds back the owner compensation entered above. Confirm the appropriate convention with the franchisee's lender or CPA."
+                      >?</span
+                    ></label
+                  ><select id="dscrMethod">
+                    <option value="conservative" selected>
+                      Internal conservative
+                    </option>
+                    <option value="owner_addback">
+                      Lender-style owner compensation addback
+                    </option>
+                  </select>
+                </div>
+                <div class="section-confirmation">
+                  <label class="checkbox-row" for="financialsReviewed">
+                    <input id="financialsReviewed" type="checkbox" />
+                    <span
+                      >Financial inputs have been reviewed; any zero values are
+                      intentional.</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section class="section" id="cashSection" data-section="cash">
+              <div class="section-title">
+                <h3>
+                  4. Cash & Owner Capital
+                  <span
+                    class="q"
+                    data-help="Cash is oxygen for the business. This section shows whether the cash tank filled up or drained during the quarter."
+                    >?</span
+                  >
+                </h3>
+                <span class="tag">cash movement</span>
+              </div>
+              <div class="section-body inputs-grid">
+                <div class="section-lock-note">✓ This section is marked complete. Inputs are locked until the completion box is unchecked.</div>
+                <div>
+                  <label
+                    >Beginning cash balance ($)
+                    <span
+                      class="q"
+                      data-help="Cash in the business bank accounts at the start of the review period."
+                      >?</span
+                    ></label
+                  ><input id="beginCash" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Ending cash balance ($)
+                    <span
+                      class="q"
+                      data-help="Cash in the business bank accounts at the end of the review period."
+                      >?</span
+                    ></label
+                  ><input id="endCash" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Owner cash added this period ($)
+                    <span
+                      class="q"
+                      data-help="Money the owner put into the business during the period."
+                      >?</span
+                    ></label
+                  ><input
+                    id="ownerContributions"
+                    type="number"
+                    step="1"
+                    value="0"
+                  />
+                </div>
+                <div>
+                  <label
+                    >Minimum desired cash cushion ($)
+                    <span
+                      class="q"
+                      data-help="The amount of cash the franchisee wants to keep as a safety cushion."
+                      >?</span
+                    ></label
+                  ><input
+                    id="cashCushionTarget"
+                    type="number"
+                    step="1000"
+                    value="0"
+                  />
+                </div>
+                <div class="section-confirmation">
+                  <label class="checkbox-row" for="cashReviewed">
+                    <input id="cashReviewed" type="checkbox" />
+                    <span
+                      >Cash and owner-capital inputs have been reviewed; any
+                      zero values are intentional.</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section class="section" id="debtSection" data-section="debt">
+              <div class="section-title">
+                <h3>
+                  5. Debt / Credit Card Schedule
+                  <span
+                    class="q"
+                    data-help="This is a list of loans, lines of credit, and credit cards. It helps us see how heavy the monthly payments are."
+                    >?</span
+                  >
+                </h3>
+                <span class="tag">loans + cards</span>
+              </div>
+              <div class="section-body stack">
+                <div class="section-lock-note">✓ This section is marked complete. Inputs are locked until the completion box is unchecked.</div>
+                <div class="table-scroll">
+                  <table class="debt-table" id="debtTable">
+                    <thead>
+                      <tr>
+                        <th>On</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Purpose</th>
+                        <th>Starting balance</th>
+                        <th>Current balance</th>
+                        <th>APR</th>
+                        <th>Payment/mo</th>
+                        <th>Start date</th>
+                        <th>Total term</th>
+                        <th>Remaining term</th>
+                      </tr>
+                    </thead>
+                    <tbody id="debtRows"></tbody>
+                  </table>
+                </div>
+                <div class="button-row">
+                  <button type="button" class="secondary" id="addDebtBtn">
+                    Add debt row
+                  </button>
+                  <button type="button" class="ghost" id="clearDebtBtn">
+                    Clear debt rows
+                  </button>
+                </div>
+                <div class="section-confirmation">
+                  <label class="checkbox-row" for="confirmNoDebt">
+                    <input id="confirmNoDebt" type="checkbox" />
+                    <span
+                      >The franchisee has no business debt or business-funded
+                      personal debt as of the review-period end date.</span
+                    >
+                  </label>
+                </div>
+                <div class="section-confirmation">
+                  <label class="checkbox-row" for="debtReviewed">
+                    <input id="debtReviewed" type="checkbox" />
+                    <span
+                      >The debt schedule has been reviewed and all applicable
+                      balances and payments are included.</span
+                    >
+                  </label>
+                </div>
+                <div class="footer-note">
+                  Include SBA loans, equipment loans, bank loans, lines of
+                  credit, credit cards, personal loans used for the business,
+                  and any other required monthly debt payment. Use the no-debt
+                  confirmation only when no applicable obligation exists. The
+                  tool presents data for discussion; it does not tell a
+                  franchisee which debt to refinance, pay off, or take on.
+                </div>
+              </div>
+            </section>
+
+            <section class="section" id="arSection" data-section="ar">
+              <div class="section-title">
+                <h3>
+                  6. Accounts Receivable & Collections
+                  <span
+                    class="q"
+                    data-help="A/R means money customers owe but have not paid yet. It matters because revenue is not useful if cash does not arrive."
+                    >?</span
+                  >
+                </h3>
+                <span class="tag">collections</span>
+              </div>
+              <div class="section-body inputs-grid">
+                <div class="section-lock-note">✓ This section is marked complete. Inputs are locked until the completion box is unchecked.</div>
+                <div>
+                  <label
+                    >A/R current ($)
+                    <span
+                      class="q"
+                      data-help="Customer balances that are not overdue yet."
+                      >?</span
+                    ></label
+                  ><input id="arCurrent" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >A/R 1–30 days overdue ($)
+                    <span
+                      class="q"
+                      data-help="Customer balances that are a little overdue."
+                      >?</span
+                    ></label
+                  ><input id="ar30" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >A/R 31–60 days overdue ($)
+                    <span
+                      class="q"
+                      data-help="Customer balances that need attention because they are more than a month late."
+                      >?</span
+                    ></label
+                  ><input id="ar60" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >A/R 61–90 days overdue ($)
+                    <span
+                      class="q"
+                      data-help="Customer balances that are becoming a collection problem."
+                      >?</span
+                    ></label
+                  ><input id="ar90" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >A/R over 90 days overdue ($)
+                    <span
+                      class="q"
+                      data-help="Very old customer balances. These may be hard to collect."
+                      >?</span
+                    ></label
+                  ><input id="arOver90" type="number" step="1" value="0" />
+                </div>
+                <div>
+                  <label
+                    >Bad debt / write-offs this period ($)
+                    <span
+                      class="q"
+                      data-help="Amounts the business does not expect to collect."
+                      >?</span
+                    ></label
+                  ><input id="badDebt" type="number" step="1" value="0" />
+                </div>
+                <div class="section-confirmation">
+                  <label class="checkbox-row" for="arReviewed">
+                    <input id="arReviewed" type="checkbox" />
+                    <span
+                      >A/R and collections inputs have been reviewed; any zero
+                      values are intentional.</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section
+              class="section"
+              id="benchmarkSection"
+              data-section="benchmarks"
+            >
+              <div class="section-title">
+                <h3>
+                  7. Benchmark Settings
+                  <span
+                    class="q"
+                    data-help="These are comparison lines, not promises. They help the review call identify what is unusually high or low."
+                    >?</span
+                  >
+                </h3>
+                <span class="tag">discussion guide</span>
+              </div>
+              <div class="section-body inputs-grid">
+                <div class="section-lock-note">✓ This section is marked complete. Inputs are locked until the completion box is unchecked.</div>
+                <div class="benchmark-toolbar">
+                  <span class="small-muted"
+                    >Iceworks default benchmarks are restored and locked for
+                    normal reviews. Changes affect health colors and should be
+                    deliberate.</span
+                  >
+                  <button type="button" class="ghost" id="benchmarkEditBtn">
+                    Unlock benchmarks
+                  </button>
+                </div>
+                <div>
+                  <label
+                    >Target average lease rate ($/machine/mo)
+                    <span
+                      class="q"
+                      data-help="A comparison point for customer lease pricing."
+                      >?</span
+                    ></label
+                  ><input
+                    id="benchmarkLeaseRate"
+                    type="number"
+                    step="1"
+                    value="240"
+                    readonly
+                  />
+                </div>
+                <div>
+                  <label
+                    >Service cost watch level ($/machine/mo)
+                    <span
+                      class="q"
+                      data-help="If service cost per machine is above this, the tool flags it for discussion."
+                      >?</span
+                    ></label
+                  ><input
+                    id="benchmarkServiceCost"
+                    type="number"
+                    step="1"
+                    value="80"
+                    readonly
+                  />
+                </div>
+                <div>
+                  <label
+                    >Healthy DSCR target
+                    <span
+                      class="q"
+                      data-help="DSCR means cash available before debt divided by loan payments. 1.25x means $1.25 available for every $1.00 of debt payments."
+                      >?</span
+                    ></label
+                  ><input
+                    id="benchmarkDscr"
+                    type="number"
+                    step="0.05"
+                    value="1.25"
+                    readonly
+                  />
+                </div>
+                <div>
+                  <label
+                    >Cash runway watch level (months)
+                    <span
+                      class="q"
+                      data-help="If cash would cover fewer months than this, the tool flags cash cushion for discussion."
+                      >?</span
+                    ></label
+                  ><input
+                    id="benchmarkRunway"
+                    type="number"
+                    step="0.5"
+                    value="3"
+                    readonly
+                  />
+                </div>
+                <div>
+                  <label
+                    >A/R over 30 days watch level (%)
+                    <span
+                      class="q"
+                      data-help="If too much A/R is more than 30 days late, collections may need attention."
+                      >?</span
+                    ></label
+                  ><input
+                    id="benchmarkArOver30"
+                    type="number"
+                    step="1"
+                    value="10"
+                    readonly
+                  />
+                </div>
+                <div>
+                  <label
+                    >Debt payment burden watch level (%)
+                    <span
+                      class="q"
+                      data-help="If monthly debt payments consume a high percent of revenue, debt structure may be worth discussing."
+                      >?</span
+                    ></label
+                  ><input
+                    id="benchmarkDebtBurden"
+                    type="number"
+                    step="1"
+                    value="25"
+                    readonly
+                  />
+                </div>
+                <div class="section-confirmation">
+                  <label class="checkbox-row" for="benchmarksReviewed">
+                    <input id="benchmarksReviewed" type="checkbox" />
+                    <span>Benchmark settings have been reviewed and are ready for this review.</span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <section class="section" id="notesSection" data-section="notes">
+              <div class="section-title">
+                <h3>
+                  8. Review Notes & Follow-Up
+                  <span
+                    class="q"
+                    data-help="This is where the call becomes useful. Record what was discussed and what will be checked next quarter."
+                    >?</span
+                  >
+                </h3>
+                <span class="tag">quarterly record</span>
+              </div>
+              <div class="section-body inputs-grid">
+                <div class="section-lock-note">✓ This section is marked complete. Inputs are locked until the completion box is unchecked.</div>
+                <div class="full">
+                  <label
+                    >What is working well?
+                    <span
+                      class="q"
+                      data-help="Things the franchisee should keep doing because they appear to be helping the business."
+                      >?</span
+                    ></label
+                  ><textarea id="workingWell"></textarea>
+                </div>
+                <div class="full">
+                  <label
+                    >Discussion items / areas to review
+                    <span
+                      class="q"
+                      data-help="Use discussion language, not instructions. Example: Review whether service costs are trending higher than expected."
+                      >?</span
+                    ></label
+                  ><textarea id="discussionItems"></textarea>
+                </div>
+                <div class="full">
+                  <label
+                    >Franchisee follow-up items before next review
+                    <span
+                      class="q"
+                      data-help="Actions the franchisee agrees to take or information they agree to gather before the next review."
+                      >?</span
+                    ></label
+                  ><textarea id="followUpItems"></textarea>
+                </div>
+                <div class="full">
+                  <label
+                    >Iceworks follow-up items
+                    <span
+                      class="q"
+                      data-help="Support items Iceworks will provide, such as reporting help, vendor support, CRM cleanup, or follow-up training."
+                      >?</span
+                    ></label
+                  ><textarea id="iceworksItems"></textarea>
+                </div>
+                <div class="section-confirmation">
+                  <label class="checkbox-row" for="notesReviewed">
+                    <input id="notesReviewed" type="checkbox" />
+                    <span>Review notes and follow-up items have been reviewed and are complete.</span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <div class="button-row">
+              <button type="button" class="primary" id="recalcBtn">
+                Recalculate
+              </button>
+              <button type="button" class="secondary" id="saveBtn">
+                Save inputs in browser
+              </button>
+              <button type="button" class="secondary" id="loadBtn">
+                Load saved inputs
+              </button>
+
+              <!-- NEW ADDITION: CSV Import -->
+              <input
+                type="file"
+                id="csvFileInput"
+                accept=".csv"
+                style="display: none"
+              />
+              <button
+                type="button"
+                class="secondary"
+                id="importCsvBtn"
+                style="background: var(--brand); color: #fff"
+              >
+                Import Icebox CSV
+              </button>
+              <!-- END NEW ADDITION -->
+
+              <button type="button" class="secondary" id="exportJsonBtn">
+                Export review JSON
+              </button>
+              <button type="button" class="secondary" id="exportCsvBtn">
+                Export dashboard CSV
+              </button>
+              <button type="button" class="ghost" id="printBtn">
+                Print / save PDF
+              </button>
+            </div>
+
+            <div class="footer-note">
+              <strong>Important:</strong> This tool is for operational review
+              and discussion purposes only. Iceworks Franchise Group does not
+              provide tax, legal, accounting, investment, lending, or financial
+              advisory services. Franchisees should consult their CPA, attorney,
+              lender, or financial advisor before making financing or business
+              decisions.
+            </div>
+          </div>
+        </section>
+
+        <aside class="card right-sticky" id="dashboardCard">
+          <div class="dashboard-head">
+            <div>
+              <h2>
+                Quarterly Health Dashboard
+                <span
+                  class="q"
+                  data-help="This is the scoreboard. It turns the inputs into plain-English signals for the quarterly review conversation."
+                  >?</span
+                >
+              </h2>
+              <div class="small-muted" id="dashboardSubhead">
+                Actual-performance snapshot
+              </div>
+            </div>
+            <div class="dashboard-controls" id="statusPills"></div>
+          </div>
+          <div class="kpi-grid" id="kpiGrid"></div>
+          <div class="chart-panel">
+            <div class="chart-head">
+              <div>
+                <h3 class="chart-title">Where the Monthly Lease Revenue Goes</h3>
+                <div class="chart-subtitle">
+                  Starts with ending monthly recurring lease revenue, then subtracts average monthly royalties, merchant fees, service and direct costs, operating overhead, and monthly debt service to estimate net monthly cash after debt.
+                </div>
+              </div>
+            </div>
+            <div class="chart-wrap"><canvas id="quarterChart"></canvas></div>
+            <div class="chart-summary-grid" id="chartSummaryGrid"></div>
+            <div class="legend" id="chartLegend"></div>
+          </div>
+        </aside>
+      </div>
+
+      <div class="review-grid">
+        <section class="card">
+          <div class="card-head">
+            <h2>
+              Discussion Flags
+              <span
+                class="q"
+                data-help="These are not financial recommendations. They are items to discuss because the numbers may deserve attention."
+                >?</span
+              >
+            </h2>
+            <span class="small-muted">red / yellow / green</span>
+          </div>
+          <div class="card-body">
+            <div class="flag-list" id="flagList"></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>
+              Review Summary
+              <span
+                class="q"
+                data-help="A quick written summary you can print or copy into your quarterly review notes."
+                >?</span
+              >
+            </h2>
+            <span class="small-muted">plain-English recap</span>
+          </div>
+          <div class="card-body stack">
+            <div class="summary-card">
+              <h3>Plain-English Review Summary</h3>
+              <div id="plainSummary" class="small-muted"></div>
+            </div>
+            <div class="summary-card">
+              <h3>Suggested Review Packet</h3>
+              <div class="small-muted">
+                For each quarterly review, request: Profit & Loss by Month,
+                Balance Sheet, A/R Aging, Transaction Detail by Account, debt
+                statements, credit card statements, bank balance summary, Icebox
+                machines export, and Icebox lease agreements export.
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div class="tooltip" id="tooltip" role="tooltip" aria-hidden="true"></div>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const money = (v, d = 0) => {
+        if (!isFinite(v)) return "—";
+        const abs = Math.abs(v);
+        const s = abs.toLocaleString(undefined, {
+          minimumFractionDigits: d,
+          maximumFractionDigits: d,
+        });
+        return v < 0 ? `($${s})` : `$${s}`;
+      };
+      const numfmt = (v, d = 0) =>
+        isFinite(v)
+          ? v.toLocaleString(undefined, {
+              minimumFractionDigits: d,
+              maximumFractionDigits: d,
+            })
+          : "—";
+      const pct = (v, d = 1) => (isFinite(v) ? `${v.toFixed(d)}%` : "—");
+      const xfmt = (v) => (isFinite(v) ? `${v.toFixed(2)}x` : "—");
+      const val = (id) => parseFloat($(id)?.value || 0);
+      const textVal = (id) => $(id)?.value || "";
+      const classFor = (state) =>
+        state === "good"
+          ? "good"
+          : state === "warn"
+            ? "warn"
+            : state === "bad"
+              ? "bad"
+              : "";
+      const colors = {
+        revenue: "#2f6bff",
+        direct: "#f97316",
+        overhead: "#6f52ed",
+        debt: "#111827",
+        cash: "#0f8b5f",
+        bad: "#bd3039",
+      };
+
+      function setToday() {
+        const today = new Date();
+        const iso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+        if (!$("reviewDate").value) $("reviewDate").value = iso;
+      }
+
+      function initDebtRows() {
+        const tbody = $("debtRows");
+        tbody.innerHTML = "";
+        addDebtRow({
+          enabled: false,
+          name: "",
+          type: "Other",
+          purpose: "",
+          startBalance: 0,
+          balance: 0,
+          apr: 0,
+          payment: 0,
+          startDate: "",
+          totalTerm: 0,
+        });
+      }
+
+      function addDebtRow(data = {}) {
+        const tbody = $("debtRows");
+        const idx = tbody.children.length + 1;
+        const row = Object.assign(
+          {
+            enabled: true,
+            name: "",
+            type: "Other",
+            purpose: "",
+            startBalance: 0,
+            balance: 0,
+            apr: 0,
+            payment: 0,
+            startDate: "",
+            totalTerm: 0,
+          },
+          data,
+        );
+        if (row.startBalance === undefined) row.startBalance = row.balance || 0;
+        if (row.totalTerm === undefined) row.totalTerm = row.term || 0;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+    <td><input type="checkbox" id="debt${idx}_enabled" ${row.enabled ? "checked" : ""}></td>
+    <td><input id="debt${idx}_name" value="${escapeHtml(row.name)}"></td>
+    <td><select id="debt${idx}_type">
+      ${["SBA loan", "Equipment loan", "LOC", "Credit card", "Personal loan", "Vehicle loan", "Other"].map((t) => `<option value="${t}" ${t === row.type ? "selected" : ""}>${t}</option>`).join("")}
+    </select></td>
+    <td><input id="debt${idx}_purpose" value="${escapeHtml(row.purpose)}"></td>
+    <td><input id="debt${idx}_startBalance" type="number" step="1" value="${row.startBalance}"></td>
+    <td><input id="debt${idx}_balance" type="number" step="1" value="${row.balance}"></td>
+    <td><input id="debt${idx}_apr" type="number" step="0.1" value="${row.apr}"></td>
+    <td><input id="debt${idx}_payment" type="number" step="1" value="${row.payment}"></td>
+    <td><input id="debt${idx}_startDate" type="date" value="${row.startDate || ""}"></td>
+    <td><input id="debt${idx}_totalTerm" type="number" step="1" value="${row.totalTerm}"></td>
+    <td><input id="debt${idx}_remainingTerm" type="text" readonly value="—" title="Estimated from loan start date, total term, and review period end date."></td>
+  `;
+        tbody.appendChild(tr);
+        tr.querySelectorAll("input,select").forEach((el) =>
+          el.addEventListener("input", () => {
+            if (el.type === "checkbox" && el.checked && $("confirmNoDebt")) {
+              $("confirmNoDebt").checked = false;
+            }
+            calculate();
+          }),
+        );
+      }
+
+      function escapeHtml(str) {
+        return String(str ?? "").replace(
+          /[&<>"']/g,
+          (s) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[s],
+        );
+      }
+
+      function parseDateValue(value) {
+        if (!value) return null;
+        const d = new Date(value + "T00:00:00");
+        return isNaN(d.getTime()) ? null : d;
+      }
+
+      function monthsBetween(start, end) {
+        if (!start || !end) return 0;
+        return Math.max(
+          0,
+          (end.getFullYear() - start.getFullYear()) * 12 +
+            (end.getMonth() - start.getMonth()),
+        );
+      }
+
+      function updateDebtRemainingTerms() {
+        const asOf = parseDateValue($("periodEnd")?.value) || new Date();
+        const count = $("debtRows").children.length;
+        for (let i = 1; i <= count; i++) {
+          const total = parseFloat($(`debt${i}_totalTerm`)?.value || 0);
+          const start = parseDateValue($(`debt${i}_startDate`)?.value || "");
+          const out = $(`debt${i}_remainingTerm`);
+          if (!out) continue;
+          if (!total || !start) {
+            out.value = "—";
+          } else {
+            const rem = Math.max(
+              0,
+              Math.round(total - monthsBetween(start, asOf)),
+            );
+            out.value = `${rem} mo`;
+          }
+        }
+      }
+
+      function getDebtRows() {
+        const rows = [];
+        const count = $("debtRows").children.length;
+        for (let i = 1; i <= count; i++) {
+          const enabled = $(`debt${i}_enabled`)?.checked;
+          rows.push({
+            enabled,
+            name: $(`debt${i}_name`)?.value || `Debt ${i}`,
+            type: $(`debt${i}_type`)?.value || "Other",
+            purpose: $(`debt${i}_purpose`)?.value || "",
+            startBalance: parseFloat($(`debt${i}_startBalance`)?.value || 0),
+            balance: parseFloat($(`debt${i}_balance`)?.value || 0),
+            apr: parseFloat($(`debt${i}_apr`)?.value || 0),
+            payment: parseFloat($(`debt${i}_payment`)?.value || 0),
+            startDate: $(`debt${i}_startDate`)?.value || "",
+            totalTerm: parseFloat($(`debt${i}_totalTerm`)?.value || 0),
+            remainingTerm:
+              parseFloat(
+                ($(`debt${i}_remainingTerm`)?.value || "").replace(
+                  /[^0-9.]/g,
+                  "",
+                ),
+              ) || 0,
+          });
+        }
+        return rows;
+      }
+
+      const DEFAULT_BENCHMARKS = Object.freeze({
+        benchmarkLeaseRate: 240,
+        benchmarkServiceCost: 80,
+        benchmarkDscr: 1.25,
+        benchmarkRunway: 3,
+        benchmarkArOver30: 10,
+        benchmarkDebtBurden: 25,
+      });
+
+      const reviewCompletionChecks = [
+        { id: "setupReviewed", label: "Review Setup", sectionId: "setupSection" },
+        { id: "machinesReviewed", label: "Operating Metrics", sectionId: "machinesSection" },
+        { id: "financialsReviewed", label: "Financial Summary", sectionId: "financialSection" },
+        { id: "cashReviewed", label: "Cash & Owner Capital", sectionId: "cashSection" },
+        { id: "debtReviewed", label: "Debt Schedule", sectionId: "debtSection" },
+        { id: "arReviewed", label: "A/R & Collections", sectionId: "arSection" },
+        { id: "benchmarksReviewed", label: "Benchmark Settings", sectionId: "benchmarkSection" },
+        { id: "notesReviewed", label: "Review Notes & Follow-Up", sectionId: "notesSection" },
+      ];
+
+      function deriveReviewMonths() {
+        const start = parseDateValue($("periodStart")?.value || "");
+        const end = parseDateValue($("periodEnd")?.value || "");
+        if (!start || !end || end < start) return 0;
+        return (
+          (end.getFullYear() - start.getFullYear()) * 12 +
+          (end.getMonth() - start.getMonth()) +
+          1
+        );
+      }
+
+      function benchmarkValue(id) {
+        const entered = parseFloat($(id)?.value || "");
+        return entered > 0 ? entered : DEFAULT_BENCHMARKS[id];
+      }
+
+      function getCompletionState(debtRows) {
+        const missingSections = reviewCompletionChecks
+          .filter((item) => !$(item.id)?.checked)
+          .map((item) => item.label);
+        const validationErrors = [];
+        const requiredSetup = [
+          ["ownerName", "Owner name"],
+          ["marketName", "Market(s)"],
+          ["periodName", "Review period name"],
+          ["periodStart", "Review period start"],
+          ["periodEnd", "Review period end"],
+          ["reviewDate", "Review date"],
+        ];
+        const missingSetupFields = requiredSetup
+          .filter(([id]) => !textVal(id).trim())
+          .map(([, label]) => label);
+        if (missingSetupFields.length) {
+          validationErrors.push(
+            `Missing setup fields: ${missingSetupFields.join(", ")}.`,
+          );
+        }
+        if (deriveReviewMonths() <= 0) {
+          validationErrors.push("Review-period dates are missing or invalid.");
+        }
+
+        const enabledDebt = debtRows.filter((row) => row.enabled);
+        const noDebt = !!$("confirmNoDebt")?.checked;
+        const debtReviewed = !!$("debtReviewed")?.checked;
+        if (noDebt && enabledDebt.length) {
+          validationErrors.push(
+            "The no-debt confirmation conflicts with enabled debt rows.",
+          );
+        }
+        if (debtReviewed && !noDebt && !enabledDebt.length) {
+          validationErrors.push(
+            "Add and enable at least one debt row, or confirm that the franchisee has no debt.",
+          );
+        }
+        enabledDebt.forEach((row, index) => {
+          if (!String(row.name || "").trim())
+            validationErrors.push(`Debt row ${index + 1} needs a name.`);
+          if ((row.balance || 0) <= 0 && (row.payment || 0) <= 0)
+            validationErrors.push(
+              `Debt row ${index + 1} needs a balance or monthly payment.`,
+            );
+        });
+
+        Object.keys(DEFAULT_BENCHMARKS).forEach((id) => {
+          const entered = parseFloat($(id)?.value || "");
+          if (!(entered > 0)) {
+            validationErrors.push(
+              `${id.replace(/^benchmark/, "Benchmark ")} must be greater than zero; the Iceworks default is being used temporarily.`,
+            );
+          }
+        });
+
+        const uniqueMissing = [...new Set(missingSections)];
+        return {
+          isComplete:
+            uniqueMissing.length === 0 && validationErrors.length === 0,
+          missingSections: uniqueMissing,
+          validationErrors,
+        };
+      }
+
+      function getDataChecks() {
+        const checks = [];
+        if ($("machinesReviewed")?.checked) {
+          const expectedEnd =
+            val("machinesStart") +
+            val("machinesAdded") -
+            val("machinesRemoved");
+          if (Math.abs(expectedEnd - val("machinesEnd")) > 0.01) {
+            checks.push(
+              `Machine roll-forward does not reconcile: beginning + added - removed equals ${numfmt(expectedEnd)}, but ending machines is ${numfmt(val("machinesEnd"))}.`,
+            );
+          }
+          const expectedMrr = val("machinesEnd") * val("avgLeaseRate");
+          const enteredMrr = val("currentMRR");
+          const tolerance = Math.max(100, Math.abs(expectedMrr) * 0.05);
+          if (
+            expectedMrr > 0 &&
+            Math.abs(enteredMrr - expectedMrr) > tolerance
+          ) {
+            checks.push(
+              `MRR cross-check differs: ending machines × average lease rate is ${money(expectedMrr)}, versus entered MRR of ${money(enteredMrr)}.`,
+            );
+          }
+        }
+        return checks;
+      }
+
+      function calculate() {
+        const derivedMonths = deriveReviewMonths();
+        if ($("periodMonths")) $("periodMonths").value = derivedMonths || 0;
+        const months = Math.max(1, derivedMonths || 0);
+        const royaltyBase = val("grossSalesForRoyalty");
+        const royaltyRate = val("royaltyPercent");
+        const calculatedRoyalty =
+          royaltyBase > 0 && royaltyRate > 0 ? (royaltyBase * royaltyRate) / 100 : 0;
+        if ($("royaltyCost")) {
+          $("royaltyCost").value = Number.isFinite(calculatedRoyalty)
+            ? (Math.round(calculatedRoyalty * 100) / 100).toString()
+            : "0";
+        }
+        const avgMachines = (val("machinesStart") + val("machinesEnd")) / 2;
+        const totalRevenue = val("leaseRevenue") + val("otherRevenue");
+        const directServiceCosts =
+          val("pmCost") +
+          val("repairPartsCost") +
+          val("installDirectCost") +
+          val("otherDirectCost");
+        const directCosts =
+          directServiceCosts + val("royaltyCost") + val("merchantFees");
+        const grossProfit = totalRevenue - directCosts;
+        const grossMargin =
+          totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
+        const ebitdaBeforeDebt = grossProfit - val("fixedOverhead");
+        const ownerCompensationAddback =
+          textVal("dscrMethod") === "owner_addback"
+            ? val("ownerCompensation")
+            : 0;
+        const cashAvailableForDebt =
+          ebitdaBeforeDebt + ownerCompensationAddback;
+        const serviceCostPerMachine =
+          avgMachines > 0
+            ? (val("pmCost") + val("repairPartsCost")) / avgMachines / months
+            : 0;
+        const directCostPerMachine =
+          avgMachines > 0 ? directServiceCosts / avgMachines / months : 0;
+        const revenuePerMachine =
+          avgMachines > 0 ? totalRevenue / avgMachines / months : 0;
+        const enteredMrr = val("currentMRR");
+        const mrr = enteredMrr;
+        const machineGrowth = val("machinesEnd") - val("machinesStart");
+        const monthlyLeaseRevenueBasis =
+          enteredMrr > 0 ? enteredMrr : val("leaseRevenue") / months;
+        const monthlyRoyaltyCost = val("royaltyCost") / months;
+        const monthlyMerchantFees = val("merchantFees") / months;
+        const monthlyServiceAndDirectCosts = directServiceCosts / months;
+        const monthlyOverhead = val("fixedOverhead") / months;
+
+        updateDebtRemainingTerms();
+        const allDebtRows = getDebtRows();
+        const debtRows = allDebtRows.filter((r) => r.enabled);
+        const totalDebt = debtRows.reduce(
+          (sum, r) => sum + (r.balance || 0),
+          0,
+        );
+        const monthlyDebtService = debtRows.reduce(
+          (sum, r) => sum + (r.payment || 0),
+          0,
+        );
+        const periodDebtService = monthlyDebtService * months;
+        const weightedApr =
+          totalDebt > 0
+            ? debtRows.reduce(
+                (sum, r) => sum + (r.balance || 0) * (r.apr || 0),
+                0,
+              ) / totalDebt
+            : 0;
+        const dscr =
+          monthlyDebtService > 0
+            ? cashAvailableForDebt / months / monthlyDebtService
+            : Infinity;
+        const debtPaymentBurden =
+          monthlyDebtService > 0 && totalRevenue <= 0
+            ? Infinity
+            : totalRevenue > 0
+              ? (periodDebtService / totalRevenue) * 100
+              : 0;
+        const debtPerMachine =
+          val("machinesEnd") > 0 ? totalDebt / val("machinesEnd") : 0;
+
+        const arCurrent = val("arCurrent"),
+          ar30 = val("ar30"),
+          ar60 = val("ar60"),
+          ar90 = val("ar90"),
+          arOver90 = val("arOver90");
+        const arTotal = arCurrent + ar30 + ar60 + ar90 + arOver90;
+        const arOver30 = ar60 + ar90 + arOver90;
+        const arOver30Pct = arTotal > 0 ? (arOver30 / arTotal) * 100 : 0;
+        const cashChange = val("endCash") - val("beginCash");
+        const adjustedCashChange =
+          cashChange - val("ownerContributions") + val("ownerDraws");
+        const monthlyNetCashAfterDebt =
+          monthlyLeaseRevenueBasis -
+          monthlyRoyaltyCost -
+          monthlyMerchantFees -
+          monthlyServiceAndDirectCosts -
+          monthlyOverhead -
+          monthlyDebtService;
+        const monthlyBurnAfterDebt = Math.max(0, -monthlyNetCashAfterDebt);
+        const cashRunway =
+          monthlyBurnAfterDebt > 0
+            ? val("endCash") / monthlyBurnAfterDebt
+            : Infinity;
+        const cashCushionDelta = val("endCash") - val("cashCushionTarget");
+
+        const benchmarkDscr = benchmarkValue("benchmarkDscr");
+        const benchmarkRunway = benchmarkValue("benchmarkRunway");
+        const benchmarkService = benchmarkValue("benchmarkServiceCost");
+        const benchmarkAr = benchmarkValue("benchmarkArOver30");
+        const benchmarkDebtBurden = benchmarkValue("benchmarkDebtBurden");
+        const completion = getCompletionState(allDebtRows);
+        const dataChecks = getDataChecks();
+
+        const data = {
+          months: derivedMonths || 0,
+          calculationMonths: months,
+          avgMachines,
+          totalRevenue,
+          directCosts,
+          directServiceCosts,
+          grossProfit,
+          grossMargin,
+          ebitdaBeforeDebt,
+          cashAvailableForDebt,
+          ownerCompensationAddback,
+          dscrMethod: textVal("dscrMethod"),
+          serviceCostPerMachine,
+          directCostPerMachine,
+          revenuePerMachine,
+          mrr,
+          machineGrowth,
+          monthlyLeaseRevenueBasis,
+          monthlyRoyaltyCost,
+          monthlyMerchantFees,
+          monthlyServiceAndDirectCosts,
+          monthlyOverhead,
+          monthlyNetCashAfterDebt,
+          totalDebt,
+          monthlyDebtService,
+          periodDebtService,
+          weightedApr,
+          dscr,
+          debtPaymentBurden,
+          debtPerMachine,
+          arTotal,
+          arOver30,
+          arOver30Pct,
+          cashChange,
+          adjustedCashChange,
+          monthlyBurnAfterDebt,
+          cashRunway,
+          cashCushionDelta,
+          benchmarkDscr,
+          benchmarkRunway,
+          benchmarkService,
+          benchmarkAr,
+          benchmarkDebtBurden,
+          completion,
+          dataChecks,
+        };
+
+        renderDashboard(data);
+        renderFlags(data);
+        renderSummary(data);
+        drawChart(data);
+        const marketLabel = textVal("marketName").trim();
+        const periodLabel = textVal("periodName").trim();
+        const reviewParts = [marketLabel, periodLabel].filter(Boolean);
+        $("reviewLabel").textContent = reviewParts.length
+          ? reviewParts.join(" · ")
+          : "Quarterly review";
+        $("dashboardSubhead").textContent = reviewParts.length
+          ? `${reviewParts.join(" · ")} · ${derivedMonths || 0} month review`
+          : completion.isComplete
+            ? "Actual-performance snapshot"
+            : "Complete the required review sections to activate health colors";
+        window.__reviewData = data;
+        if (typeof updateSectionCompletionUI === "function") {
+          updateSectionCompletionUI(false);
+        }
+      }
+
+      function healthStatus(data) {
+        const red = [];
+        const yellow = [];
+        if (data.monthlyDebtService > 0) {
+          if (data.dscr < 1) red.push("Debt coverage below 1.00x");
+          else if (data.dscr < data.benchmarkDscr)
+            yellow.push("Debt coverage below target");
+        }
+        if (data.cashCushionDelta < 0) red.push("Cash below cushion");
+        if (isFinite(data.cashRunway) && data.cashRunway < data.benchmarkRunway)
+          yellow.push("Cash runway watch");
+        if (data.arOver30Pct > data.benchmarkAr * 2)
+          red.push("A/R collection risk");
+        else if (data.arOver30Pct > data.benchmarkAr)
+          yellow.push("A/R over 30 days watch");
+        if (data.serviceCostPerMachine > data.benchmarkService * 1.35)
+          red.push("Service cost high");
+        else if (data.serviceCostPerMachine > data.benchmarkService)
+          yellow.push("Service cost watch");
+        if (!isFinite(data.debtPaymentBurden))
+          red.push("Debt burden not measurable with zero revenue");
+        else if (data.debtPaymentBurden > data.benchmarkDebtBurden * 1.3)
+          red.push("Debt burden high");
+        else if (data.debtPaymentBurden > data.benchmarkDebtBurden)
+          yellow.push("Debt burden watch");
+        data.dataChecks.forEach(() => yellow.push("Data reconciliation check"));
+        return { red, yellow };
+      }
+
+      function renderDashboard(data) {
+        const status = healthStatus(data);
+        const isComplete = data.completion.isComplete;
+        const overall = !isComplete
+          ? "neutral"
+          : status.red.length
+            ? "bad"
+            : status.yellow.length
+              ? "warn"
+              : "good";
+        const missingCount =
+          data.completion.missingSections.length +
+          data.completion.validationErrors.length;
+        $("statusPills").innerHTML = !isComplete
+          ? `<span class="status-pill neutral">Review incomplete</span><span class="status-pill neutral">${missingCount} item${missingCount === 1 ? "" : "s"} remaining</span>`
+          : `<span class="status-pill ${overall}">${overall === "good" ? "Green review" : overall === "warn" ? "Watch items" : "Needs discussion"}</span><span class="status-pill">${status.red.length} red · ${status.yellow.length} yellow</span>`;
+        const cards = [
+          {
+            name: "Active machines",
+            value: numfmt(val("machinesEnd")),
+            note: `${numfmt(data.machineGrowth)} net added this period`,
+            section: "machines",
+            what: "The number of machines actively leased to customers at the end of the review period. The net-added note shows whether the active fleet grew or shrank during the period.",
+            why: "Active machines are the core revenue-producing base of the franchise. Growth generally creates more recurring revenue, while removals or inactive machines can slow that growth.",
+            action:
+              "Compare beginning machines, installations, removals, and ending machines. Make sure every machine counted as active is installed, producing revenue, assigned to the correct customer, and included in the service schedule.",
+          },
+          {
+            name: "Monthly recurring lease revenue",
+            value: money(data.mrr),
+            note: "Ending monthly lease-revenue run rate",
+            section: "machines",
+            what: "The amount of customer lease revenue the active machine portfolio is expected to bill in a typical month at the end of the review period. It is a monthly run rate, not the total lease revenue collected during the quarter.",
+            why: "This is the franchise's predictable monthly revenue base. It helps separate dependable lease income from one-time installation or service revenue.",
+            action:
+              "Compare this amount with ending active machines multiplied by the average lease payment. Investigate meaningful differences, including missing leases, billing errors, paused accounts, discounts, or machines that are active but not yet invoiced.",
+          },
+          {
+            name: "Avg. lease payment / machine",
+            value: money(val("avgLeaseRate")),
+            note: `Benchmark: ${money(benchmarkValue("benchmarkLeaseRate"))}`,
+            section: "machines",
+            what: "The average amount customers pay each month for each active leased machine.",
+            why: "It shows how effectively the machine portfolio is priced. A lower average payment means the franchise needs more machines to produce the same amount of recurring revenue.",
+            action:
+              "Compare the average with the Iceworks benchmark and prior periods. Review unusually low-rate leases, discounts, bundled agreements, and whether new or renewed leases are being priced consistently.",
+          },
+          {
+            name: "Total revenue this period",
+            value: money(data.totalRevenue),
+            note: `${money(data.revenuePerMachine)} / machine / month`,
+            section: "financials",
+            what: "All lease revenue plus other service or installation revenue recorded during the review period.",
+            why: "Revenue shows the overall size of the business activity for the period and becomes the starting point for calculating margins, debt burden, and revenue per machine.",
+            action:
+              "Compare total revenue with the prior quarter, the same quarter last year, and the expected revenue from the active fleet. Separate recurring lease revenue from one-time revenue so a temporary increase is not mistaken for permanent growth.",
+          },
+          {
+            name: "Contribution margin",
+            value: pct(data.grossMargin, 1),
+            note: "After direct costs, royalties, merchant fees",
+            section: "financials",
+            cls:
+              data.grossMargin >= 55
+                ? "good"
+                : data.grossMargin >= 40
+                  ? "warn"
+                  : "bad",
+            what: "The percentage of revenue remaining after direct service and installation costs, royalties, and merchant-processing fees—but before operating overhead and debt payments.",
+            why: "This shows how efficiently revenue turns into money available to cover storage, insurance, vehicles, payroll, administration, debt payments, and profit.",
+            action:
+              "When the percentage is lower than expected, review the underlying drivers: lease pricing, service frequency, repair and parts costs, installation costs, and other direct expenses. Compare both the percentage and the actual dollars remaining.",
+          },
+          {
+            name: "Service cost / machine",
+            value: money(data.serviceCostPerMachine),
+            note: `Watch level: ${money(data.benchmarkService)}`,
+            section: "financials",
+            cls:
+              data.serviceCostPerMachine <= data.benchmarkService
+                ? "good"
+                : data.serviceCostPerMachine <= data.benchmarkService * 1.35
+                  ? "warn"
+                  : "bad",
+            what: "The average monthly cost of preventive maintenance, cleaning, repairs, parts, and filter cartridges for each active machine during the review period.",
+            why: "It shows how expensive the active fleet is to maintain. Rising service cost can reduce the profitability of each lease even when revenue is growing.",
+            action:
+              "Compare the result with the watch level and prior periods. Identify repeat service calls, unusually expensive machines or customers, missed preventive maintenance, warranty opportunities, and costs that may have been entered in the wrong account.",
+          },
+          {
+            name: "EBITDA before debt",
+            value: money(data.ebitdaBeforeDebt),
+            note: `Approx. ${money(data.ebitdaBeforeDebt / data.calculationMonths)} / month`,
+            section: "financials",
+            cls: data.ebitdaBeforeDebt >= 0 ? "good" : "bad",
+            what: "The operating earnings left after direct costs and operating overhead, but before required loan and credit-card payments. Owner distributions are tracked separately and are not treated as an operating expense here.",
+            why: "It shows whether the core business operation is producing earnings before the financing structure is considered. Those earnings must help cover debt payments, build cash, and support the owner.",
+            action:
+              "Compare the approximate monthly amount with monthly debt service. If it is weak or negative, trace the cause through revenue, contribution margin, service costs, and overhead before focusing on owner draws or financing decisions.",
+          },
+          {
+            name: "Monthly debt service",
+            value: money(data.monthlyDebtService),
+            note: isFinite(data.debtPaymentBurden)
+              ? `${pct(data.debtPaymentBurden, 1)} of period revenue`
+              : "Not measurable: debt exists with zero revenue",
+            section: "debt",
+            cls: !isFinite(data.debtPaymentBurden)
+              ? "bad"
+              : data.debtPaymentBurden <= data.benchmarkDebtBurden
+                ? "good"
+                : data.debtPaymentBurden <= data.benchmarkDebtBurden * 1.3
+                  ? "warn"
+                  : "bad",
+            what: "The total required monthly payments for all enabled loans, lines of credit, credit cards, and other business-related debt in the schedule.",
+            why: "Debt payments are recurring cash obligations. A business can appear profitable before debt and still experience cash pressure when required payments are too large for its current revenue and earnings.",
+            action:
+              "Verify the payment amount against current statements and include every applicable obligation. Compare it with monthly EBITDA before debt, revenue, and expected changes such as an interest-rate adjustment or a loan beginning or ending.",
+          },
+          {
+            name: "Internal debt coverage",
+            value: isFinite(data.dscr) ? xfmt(data.dscr) : "No debt",
+            note:
+              data.dscrMethod === "owner_addback"
+                ? "EBITDA + owner compensation addback ÷ debt payments"
+                : "Reported EBITDA ÷ debt payments",
+            section: "debt",
+            cls:
+              data.monthlyDebtService === 0
+                ? "good"
+                : data.dscr < 1
+                  ? "bad"
+                  : data.dscr < data.benchmarkDscr
+                    ? "warn"
+                    : "good",
+            what: "The amount of operating cash available under the selected review method for every $1.00 of required debt payments. For example, 1.25x means approximately $1.25 is available for each $1.00 due.",
+            why: "It shows whether the business currently produces enough operating earnings to cover required debt and still retain a cushion. A result below 1.00x means the modeled operating cash does not fully cover the payments.",
+            action:
+              "Compare the result with the selected benchmark and confirm which calculation method the lender or CPA uses. Review whether revenue, margin, overhead, or the debt-payment structure is the main reason coverage is strong or weak.",
+          },
+          {
+            name: "Ending cash balance",
+            value: money(val("endCash")),
+            note: `Cushion gap: ${money(data.cashCushionDelta)}`,
+            section: "cash",
+            cls: data.cashCushionDelta >= 0 ? "good" : "bad",
+            what: "The cash held in the business bank accounts at the end of the review period, compared with the franchisee's desired minimum cash cushion.",
+            why: "Cash is what pays payroll, vendors, repairs, debt, and unexpected expenses. Profit on a report does not guarantee that enough cash is immediately available.",
+            action:
+              "Verify the balance against the bank and balance-sheet records, then review upcoming obligations. When cash is below the target cushion, identify the timing of collections, bills, debt payments, and planned equipment spending that will affect the next several weeks.",
+          },
+          {
+            name: "Net cash change",
+            value: money(data.cashChange),
+            note: `Excluding owner adds/draws: ${money(data.adjustedCashChange)}`,
+            section: "cash",
+            cls: data.cashChange >= 0 ? "good" : "bad",
+            what: "The difference between ending cash and beginning cash. The note also removes owner contributions and adds back owner draws to show the change that is more closely related to business activity.",
+            why: "It helps reveal whether the business itself is building or consuming cash and whether owner funding or distributions are masking the underlying movement.",
+            action:
+              "Compare the reported change with the owner-adjusted change. Reconcile large differences to customer collections, unpaid bills, debt principal, equipment purchases, owner transactions, and timing differences that may not appear clearly on the profit-and-loss statement.",
+          },
+          {
+            name: "Cash runway",
+            value: isFinite(data.cashRunway)
+              ? `${data.cashRunway.toFixed(1)} mo`
+              : "Positive",
+            note: "Based on operating burn after debt, before owner draws",
+            section: "cash",
+            cls:
+              !isFinite(data.cashRunway) ||
+              data.cashRunway >= data.benchmarkRunway
+                ? "good"
+                : data.cashRunway >= 1.5
+                  ? "warn"
+                  : "bad",
+            what: "An estimate of how many months the ending cash balance could support the current operating cash burn after debt payments. “Positive” means the modeled operation is not currently burning cash.",
+            why: "It estimates how much time the business has to respond if the current cash trend continues. A short runway can turn a manageable issue into an urgent one.",
+            action:
+              "When runway is short, build a near-term cash forecast and review collection timing, recurring bills, debt payments, equipment commitments, and owner funding needs. A positive result should still be monitored and should not automatically be treated as excess spendable cash.",
+          },
+          {
+            name: "Total debt balance",
+            value: money(data.totalDebt),
+            note: `${money(data.debtPerMachine)} / active machine`,
+            section: "debt",
+            what: "The combined current balance of every enabled debt row, including loans, lines of credit, and credit cards.",
+            why: "It shows the amount the business still owes and provides context for monthly payments, interest expense, leverage, and debt per active machine.",
+            action:
+              "Verify each balance against the most recent statement and confirm no obligations are missing. Review the balance per machine, maturity dates, and which large balances carry the highest rates or create the largest monthly payments.",
+          },
+          {
+            name: "Weighted average APR",
+            value: pct(data.weightedApr, 1),
+            note: "Based on enabled debt balances",
+            section: "debt",
+            cls:
+              data.totalDebt === 0
+                ? "good"
+                : data.weightedApr <= 12
+                  ? "good"
+                  : data.weightedApr <= 18
+                    ? "warn"
+                    : "bad",
+            what: "The blended annual percentage rate across all enabled debt, weighted so that larger balances have more influence than smaller balances.",
+            why: "It gives a more accurate view of the overall cost of borrowing than a simple average. A large high-rate balance can materially increase cash pressure over time.",
+            action:
+              "Review the individual debt rows behind the blended rate and identify the large balances with the highest APRs. Any refinancing, payoff, or new-borrowing decision should be evaluated with the franchisee's lender, CPA, or financial advisor.",
+          },
+          {
+            name: "A/R over 30 days",
+            value: money(data.arOver30),
+            note: `${pct(data.arOver30Pct, 1)} of total A/R`,
+            section: "ar",
+            cls:
+              data.arOver30Pct <= data.benchmarkAr
+                ? "good"
+                : data.arOver30Pct <= data.benchmarkAr * 2
+                  ? "warn"
+                  : "bad",
+            what: "The dollar amount and percentage of total accounts receivable that is more than 30 days overdue.",
+            why: "Revenue does not help cash flow until customers pay. Older receivables are more difficult to collect and may indicate billing, payment-method, customer-service, or collection problems.",
+            action:
+              "Review the aging report customer by customer. Confirm invoices were delivered and are accurate, document collection contact and promised payment dates, resolve billing disputes, and correct recurring autopay or invoicing problems.",
+          },
+          {
+            name: "Owner cash added",
+            value: money(val("ownerContributions")),
+            note: `Owner distributions entered: ${money(val("ownerDraws"))}`,
+            section: "cash",
+            what: "Money the owner contributed to the business during the review period. Owner distributions are shown separately so contributions are not confused with operating revenue.",
+            why: "Owner cash can explain why the bank balance increased even when the operation consumed cash. Repeated contributions may indicate planned startup investment—or an operating shortfall that needs attention.",
+            action:
+              "Compare owner contributions with net cash change excluding owner adds and draws. Document whether the funding was planned and temporary or is becoming recurring, and identify what the contribution was used to cover.",
+          },
+        ];
+        if (!isComplete) cards.forEach((card) => (card.cls = "neutral"));
+        $("kpiGrid").innerHTML = cards
+          .map(
+            (c, i) => `
+    <div
+      class="kpi"
+      data-section-target="${c.section}"
+      data-card-index="${i}"
+      data-metric-tooltip="true"
+      data-metric-name="${escapeHtml(c.name)}"
+      data-what="${escapeHtml(c.what)}"
+      data-why="${escapeHtml(c.why)}"
+      data-action="${escapeHtml(c.action)}"
+      role="button"
+      tabindex="0"
+      aria-label="${escapeHtml(c.name)}. Hover for a plain-English explanation; click to highlight related inputs."
+    >
+      <div class="name">${c.name}</div>
+      <div class="value ${c.cls || ""}">${c.value}</div>
+      <div class="note">${c.note}</div>
+      <div class="link-note">Hover for explanation · Click to highlight inputs</div>
+    </div>
+  `,
+          )
+          .join("");
+        document.querySelectorAll(".kpi").forEach((k) => {
+          k.addEventListener("click", () =>
+            highlightSection(k.dataset.sectionTarget, k),
+          );
+          k.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              highlightSection(k.dataset.sectionTarget, k);
+            }
+          });
+        });
+      }
+
+      function renderFlags(data) {
+        const flags = [];
+        if (!data.completion.isComplete) {
+          const missing = data.completion.missingSections.length
+            ? `Sections still requiring confirmation: ${data.completion.missingSections.join(", ")}.`
+            : "All section confirmations are complete.";
+          const errors = data.completion.validationErrors.length
+            ? ` ${data.completion.validationErrors.join(" ")}`
+            : "";
+          addFlag(
+            flags,
+            "warn",
+            "Review incomplete",
+            `${missing}${errors} Health colors remain neutral until the review is complete.`,
+          );
+          data.dataChecks.forEach((check) =>
+            addFlag(flags, "warn", "Data check", check),
+          );
+          $("flagList").innerHTML = flags
+            .map(
+              (f) =>
+                `<div class="flag ${f.state}"><strong>${f.title}</strong><span>${f.text}</span></div>`,
+            )
+            .join("");
+          return;
+        }
+
+        data.dataChecks.forEach((check) =>
+          addFlag(flags, "warn", "Data check", check),
+        );
+        if (data.monthlyDebtService === 0) {
+          addFlag(
+            flags,
+            "good",
+            "Debt coverage",
+            "No monthly debt service is modeled for this review.",
+          );
+        } else {
+          addFlag(
+            flags,
+            data.dscr < 1
+              ? "bad"
+              : data.dscr < data.benchmarkDscr
+                ? "warn"
+                : "good",
+            "Debt coverage",
+            data.dscr >= data.benchmarkDscr
+              ? `Debt coverage is at or above the target of ${xfmt(data.benchmarkDscr)} under the selected method.`
+              : data.dscr >= 1
+                ? `Debt coverage is positive but below the target. Discussion item: review debt service, operating margin, and cash cushion.`
+                : `Debt coverage is below 1.00x. Discussion item: operating cash does not currently cover required debt payments.`,
+          );
+        }
+        addFlag(
+          flags,
+          data.cashCushionDelta >= 0 ? "good" : "bad",
+          "Cash cushion",
+          data.cashCushionDelta >= 0
+            ? `Ending cash is above the desired cushion by ${money(data.cashCushionDelta)}.`
+            : `Ending cash is below the desired cushion by ${money(Math.abs(data.cashCushionDelta))}. Discussion item: review working capital and cash timing.`,
+        );
+        addFlag(
+          flags,
+          data.serviceCostPerMachine <= data.benchmarkService
+            ? "good"
+            : data.serviceCostPerMachine <= data.benchmarkService * 1.35
+              ? "warn"
+              : "bad",
+          "Service cost per machine",
+          data.serviceCostPerMachine <= data.benchmarkService
+            ? `Service cost per active machine is within the watch level.`
+            : `Service cost per active machine is above the watch level. Discussion item: compare PM, repairs, parts, and Icebox service activity.`,
+        );
+        addFlag(
+          flags,
+          data.arOver30Pct <= data.benchmarkAr
+            ? "good"
+            : data.arOver30Pct <= data.benchmarkAr * 2
+              ? "warn"
+              : "bad",
+          "A/R collections",
+          data.arOver30Pct <= data.benchmarkAr
+            ? `A/R over 30 days is within the watch level.`
+            : `A/R over 30 days is elevated. Discussion item: review collection process and customer follow-up.`,
+        );
+        addFlag(
+          flags,
+          !isFinite(data.debtPaymentBurden)
+            ? "bad"
+            : data.debtPaymentBurden <= data.benchmarkDebtBurden
+              ? "good"
+              : data.debtPaymentBurden <= data.benchmarkDebtBurden * 1.3
+                ? "warn"
+                : "bad",
+          "Debt payment burden",
+          !isFinite(data.debtPaymentBurden)
+            ? `Debt payments exist, but the period has zero revenue, so the burden percentage cannot be measured.`
+            : data.debtPaymentBurden <= data.benchmarkDebtBurden
+              ? `Monthly debt service is within the selected revenue-burden watch level.`
+              : `Debt payments consume a high share of revenue. Discussion item: review whether growth pace, cash cushion, and debt structure are sustainable.`,
+        );
+        addFlag(
+          flags,
+          data.machineGrowth > 0
+            ? "good"
+            : data.machineGrowth === 0
+              ? "warn"
+              : "bad",
+          "Machine growth",
+          data.machineGrowth > 0
+            ? `${numfmt(data.machineGrowth)} net machines were added during the period.`
+            : data.machineGrowth === 0
+              ? `Machine count was flat this period. Discussion item: review sales pipeline and installation pace.`
+              : `Machine count declined this period. Discussion item: review churn/removals and customer retention.`,
+        );
+        $("flagList").innerHTML = flags
+          .map(
+            (f) =>
+              `<div class="flag ${f.state}"><strong>${f.title}</strong><span>${f.text}</span></div>`,
+          )
+          .join("");
+      }
+
+      function addFlag(flags, state, title, text) {
+        flags.push({ state, title, text });
+      }
+
+      function renderSummary(data) {
+        if (!data.completion.isComplete) {
+          const items = [
+            ...data.completion.missingSections,
+            ...data.completion.validationErrors,
+          ];
+          $("plainSummary").textContent =
+            `Review incomplete. Complete or correct: ${items.join("; ")}. Health colors and the final operating summary will activate after the required review sections are confirmed.`;
+          return;
+        }
+        const owner = textVal("ownerName") || "the franchisee";
+        const market = textVal("marketName") || "the market";
+        const period = textVal("periodName") || "the review period";
+        const coverageText = isFinite(data.dscr)
+          ? `${xfmt(data.dscr)} under the ${data.dscrMethod === "owner_addback" ? "owner-compensation addback" : "internal conservative"} method`
+          : "no modeled monthly debt service";
+        const summary = `${owner} / ${market} ended ${period} with ${numfmt(val("machinesEnd"))} active machines and approximately ${money(data.mrr)} in ending monthly recurring lease revenue. The review period produced ${money(data.totalRevenue)} of total revenue, ${pct(data.grossMargin, 1)} contribution margin after direct costs, royalties, and merchant fees, and approximately ${money(data.ebitdaBeforeDebt)} of EBITDA before debt. Enabled debt rows show ${money(data.totalDebt)} of total debt and ${money(data.monthlyDebtService)} of monthly debt service, resulting in internal debt coverage of ${coverageText}. Ending cash was ${money(val("endCash"))}, compared with a desired cushion of ${money(val("cashCushionTarget"))}. This summary is for operational discussion only and is not financial, legal, tax, or lending advice.`;
+        $("plainSummary").textContent = summary;
+      }
+
+      function drawChart(data) {
+        const canvas = $("quarterChart");
+        const ctx = canvas.getContext("2d");
+        const ratio = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * ratio;
+        canvas.height = rect.height * ratio;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        const w = rect.width,
+          h = rect.height;
+        ctx.clearRect(0, 0, w, h);
+        if (!data.completion.isComplete) {
+          ctx.fillStyle = "#65758b";
+          ctx.font = "700 14px system-ui";
+          ctx.textAlign = "center";
+          ctx.fillText(
+            "Complete the required review sections to activate the chart.",
+            w / 2,
+            h / 2,
+          );
+          ctx.textAlign = "left";
+          $("chartLegend").innerHTML = "";
+          $("chartSummaryGrid").innerHTML = "";
+          return;
+        }
+
+        const monthlyLeaseRevenue = data.monthlyLeaseRevenueBasis;
+        const monthlyRoyalty = data.monthlyRoyaltyCost;
+        const monthlyMerchant = data.monthlyMerchantFees;
+        const monthlyService = data.monthlyServiceAndDirectCosts;
+        const monthlyOverhead = data.monthlyOverhead;
+        const monthlyDebt = data.monthlyDebtService;
+        const monthlyNet = data.monthlyNetCashAfterDebt;
+        const deductions =
+          monthlyRoyalty +
+          monthlyMerchant +
+          monthlyService +
+          monthlyOverhead +
+          monthlyDebt;
+
+        const sourceNote =
+          data.mrr > 0
+            ? "Start value uses the ending monthly recurring lease revenue input."
+            : data.totalRevenue > 0
+              ? "Ending MRR is blank, so the chart starts with average monthly lease revenue from the period."
+              : "Enter lease revenue or ending MRR to populate the starting bar.";
+
+        $("chartSummaryGrid").innerHTML = `
+          <div class="chart-summary">
+            <div class="label">Starting point</div>
+            <div class="value">${money(monthlyLeaseRevenue)}</div>
+            <div class="note">Estimated monthly lease-revenue run rate. ${sourceNote}</div>
+          </div>
+          <div class="chart-summary">
+            <div class="label">Average monthly costs removed</div>
+            <div class="value">${money(deductions)}</div>
+            <div class="note">Royalties, merchant fees, service/direct costs, overhead, and monthly debt service.</div>
+          </div>
+          <div class="chart-summary">
+            <div class="label">Net monthly cash after debt</div>
+            <div class="value ${monthlyNet >= 0 ? "good" : "bad"}">${money(monthlyNet)}</div>
+            <div class="note">This is the simplest monthly answer to “what is left after debt?”</div>
+          </div>
+        `;
+
+        const steps = [
+          {
+            label: "Lease rev",
+            fullLabel: "Monthly lease revenue",
+            delta: monthlyLeaseRevenue,
+            start: 0,
+            end: monthlyLeaseRevenue,
+            color: colors.revenue,
+            kind: "increase",
+          },
+          {
+            label: "Royalties",
+            fullLabel: "Royalties",
+            delta: -monthlyRoyalty,
+            color: "#f97316",
+            kind: "decrease",
+          },
+          {
+            label: "Merchant",
+            fullLabel: "Merchant fees",
+            delta: -monthlyMerchant,
+            color: "#8b5cf6",
+            kind: "decrease",
+          },
+          {
+            label: "Service",
+            fullLabel: "Service / direct costs",
+            delta: -monthlyService,
+            color: "#0ea5a4",
+            kind: "decrease",
+          },
+          {
+            label: "Overhead",
+            fullLabel: "Operating overhead",
+            delta: -monthlyOverhead,
+            color: colors.overhead,
+            kind: "decrease",
+          },
+          {
+            label: "Debt svc",
+            fullLabel: "Monthly debt service",
+            delta: -monthlyDebt,
+            color: colors.debt,
+            kind: "decrease",
+          },
+        ];
+
+        let running = 0;
+        steps.forEach((step, index) => {
+          if (index === 0) {
+            step.start = 0;
+            step.end = step.delta;
+            running = step.end;
+          } else {
+            step.start = running;
+            step.end = running + step.delta;
+            running = step.end;
+          }
+        });
+        steps.push({
+          label: "Net cash",
+          fullLabel: "Net monthly cash after debt",
+          delta: running,
+          start: 0,
+          end: running,
+          color: running >= 0 ? colors.cash : colors.bad,
+          kind: "total",
+        });
+
+        const pad = { l: 78, r: 18, t: 18, b: 76 };
+        const domainValues = steps.flatMap((s) => [s.start, s.end, 0]);
+        let min = Math.min(...domainValues);
+        let max = Math.max(...domainValues);
+        const spread = Math.max(1, max - min);
+        max += spread * 0.14;
+        min -= spread * 0.14;
+        const y = (v) =>
+          pad.t + ((max - v) / (max - min)) * (h - pad.t - pad.b);
+        const zeroY = y(0);
+
+        ctx.strokeStyle = "#dce7ee";
+        ctx.lineWidth = 1;
+        ctx.fillStyle = "#65758b";
+        ctx.font = "12px system-ui";
+        for (let i = 0; i <= 4; i++) {
+          const yy = pad.t + (i * (h - pad.t - pad.b)) / 4;
+          ctx.beginPath();
+          ctx.moveTo(pad.l, yy);
+          ctx.lineTo(w - pad.r, yy);
+          ctx.stroke();
+          const gv = max - (i * (max - min)) / 4;
+          ctx.fillText(shortMoney(gv), 8, yy + 4);
+        }
+        ctx.strokeStyle = "#8aa1b5";
+        ctx.beginPath();
+        ctx.moveTo(pad.l, zeroY);
+        ctx.lineTo(w - pad.r, zeroY);
+        ctx.stroke();
+
+        const chartW = w - pad.l - pad.r;
+        const barSlot = chartW / steps.length;
+        const barW = Math.min(86, barSlot * 0.58);
+        let previousEndY = null;
+        let previousX = null;
+
+        steps.forEach((step, i) => {
+          const cx = pad.l + barSlot * (i + 0.5);
+          const top = Math.min(y(step.start), y(step.end));
+          const height = Math.max(2, Math.abs(y(step.end) - y(step.start)));
+          ctx.fillStyle = step.color;
+          roundedRect(ctx, cx - barW / 2, top, barW, height, 10);
+          ctx.fill();
+
+          if (previousEndY !== null && step.kind !== "total") {
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = "#b8c8d6";
+            ctx.beginPath();
+            ctx.moveTo(previousX + barW / 2, previousEndY);
+            ctx.lineTo(cx - barW / 2, previousEndY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          const endY = y(step.end);
+          previousEndY = endY;
+          previousX = cx;
+
+          ctx.fillStyle = "#13213b";
+          ctx.font = "700 12px system-ui";
+          ctx.textAlign = "center";
+          ctx.fillText(step.label, cx, h - 34);
+          ctx.fillStyle = "#65758b";
+          ctx.font = "700 11px system-ui";
+          ctx.fillText(shortMoney(step.delta), cx, h - 16);
+          ctx.textAlign = "left";
+        });
+
+        $("chartLegend").innerHTML = [
+          { label: "Starting monthly lease revenue", color: colors.revenue },
+          { label: "Monthly deductions", color: colors.direct },
+          {
+            label: monthlyNet >= 0 ? "Positive net monthly cash" : "Negative net monthly cash",
+            color: monthlyNet >= 0 ? colors.cash : colors.bad,
+          },
+        ]
+          .map(
+            (b) =>
+              `<span class="legend-item"><span class="swatch" style="background:${b.color}"></span>${b.label}</span>`,
+          )
+          .join("");
+      }
+      function roundedRect(ctx, x, y, w, h, r) {
+        const rr = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + rr, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rr);
+        ctx.arcTo(x + w, y + h, x, y + h, rr);
+        ctx.arcTo(x, y + h, x, y, rr);
+        ctx.arcTo(x, y, x + w, y, rr);
+        ctx.closePath();
+      }
+      function shortMoney(v) {
+        const sign = v < 0 ? "-" : "";
+        const a = Math.abs(v);
+        if (a >= 1000000) return `${sign}$${(a / 1000000).toFixed(1)}M`;
+        if (a >= 1000) return `${sign}$${(a / 1000).toFixed(0)}k`;
+        return `${sign}$${a.toFixed(0)}`;
+      }
+
+      function highlightSection(name, cardEl) {
+        document
+          .querySelectorAll(".section")
+          .forEach((s) => s.classList.remove("is-highlighted"));
+        document
+          .querySelectorAll(".kpi")
+          .forEach((k) => k.classList.remove("is-selected"));
+        const el = document.querySelector(`[data-section="${name}"]`);
+        if (el) {
+          el.classList.add("is-highlighted");
+          setActiveReviewSection(el.id);
+          scrollToReviewSection(el.id, "center");
+        }
+        if (cardEl) cardEl.classList.add("is-selected");
+        setTimeout(() => {
+          if (el) el.classList.remove("is-highlighted");
+        }, 4200);
+      }
+
+      function setupTooltip() {
+        const tip = $("tooltip");
+        const targetSelector = "[data-metric-tooltip], [data-help], .q";
+        let activeTarget = null;
+        let clickHideTimer = null;
+
+        function renderMetricTooltip(el) {
+          const metricName = el.dataset.metricName || "Dashboard metric";
+          const what = el.dataset.what || "";
+          const why = el.dataset.why || "";
+          const action = el.dataset.action || "";
+          tip.classList.add("metric-tooltip");
+          tip.innerHTML = `
+            <div class="metric-tooltip-head">
+              <span class="metric-tooltip-kicker">Quarterly Health Dashboard</span>
+              <span class="metric-tooltip-title">${escapeHtml(metricName)}</span>
+            </div>
+            <div class="metric-tooltip-body">
+              <div class="metric-tooltip-section">
+                <strong>What is this?</strong>
+                <span>${escapeHtml(what)}</span>
+              </div>
+              <div class="metric-tooltip-section">
+                <strong>Why is this important?</strong>
+                <span>${escapeHtml(why)}</span>
+              </div>
+              <div class="metric-tooltip-section">
+                <strong>What do I do with this information?</strong>
+                <span>${escapeHtml(action)}</span>
+              </div>
+            </div>
+          `;
+        }
+
+        function renderStandardTooltip(el) {
+          const txt = el.dataset.help;
+          if (!txt) return false;
+          tip.classList.remove("metric-tooltip");
+          tip.textContent = txt;
+          return true;
+        }
+
+        function show(el) {
+          if (!el) return;
+          const isMetric = el.hasAttribute("data-metric-tooltip");
+          if (isMetric) renderMetricTooltip(el);
+          else if (!renderStandardTooltip(el)) return;
+          activeTarget = el;
+          tip.setAttribute("aria-hidden", "false");
+          tip.classList.add("show");
+          window.requestAnimationFrame(() => position(el));
+        }
+
+        function position(el) {
+          if (!el || !tip.classList.contains("show")) return;
+          const r = el.getBoundingClientRect();
+          const gap = 12;
+          const edge = 10;
+          const preferredWidth = el.hasAttribute("data-metric-tooltip")
+            ? 460
+            : 340;
+          const tooltipWidth = Math.min(
+            preferredWidth,
+            window.innerWidth - edge * 2,
+          );
+          tip.style.width = `${tooltipWidth}px`;
+          tip.style.maxWidth = `${tooltipWidth}px`;
+
+          const tooltipHeight = tip.offsetHeight;
+          const roomAbove = r.top - gap - edge;
+          const roomBelow = window.innerHeight - r.bottom - gap - edge;
+          let top;
+
+          if (roomAbove >= tooltipHeight || roomAbove >= roomBelow) {
+            top = Math.max(edge, r.top - tooltipHeight - gap);
+          } else {
+            top = Math.min(
+              window.innerHeight - tooltipHeight - edge,
+              r.bottom + gap,
+            );
+          }
+
+          let left = r.left + r.width / 2 - tooltipWidth / 2;
+          left = Math.max(
+            edge,
+            Math.min(window.innerWidth - tooltipWidth - edge, left),
+          );
+
+          tip.style.top = `${top}px`;
+          tip.style.left = `${left}px`;
+        }
+
+        function hide() {
+          activeTarget = null;
+          tip.classList.remove("show", "metric-tooltip");
+          tip.setAttribute("aria-hidden", "true");
+        }
+
+        document.addEventListener("pointerover", (event) => {
+          const el = event.target.closest(targetSelector);
+          if (!el) return;
+          const previous = event.relatedTarget?.closest?.(targetSelector);
+          if (previous === el) return;
+          clearTimeout(clickHideTimer);
+          show(el);
+        });
+
+        document.addEventListener("pointerout", (event) => {
+          const el = event.target.closest(targetSelector);
+          if (!el) return;
+          const next = event.relatedTarget?.closest?.(targetSelector);
+          if (next === el) return;
+          hide();
+        });
+
+        document.addEventListener("focusin", (event) => {
+          const el = event.target.closest(targetSelector);
+          if (el) show(el);
+        });
+
+        document.addEventListener("focusout", (event) => {
+          const el = event.target.closest(targetSelector);
+          const next = event.relatedTarget?.closest?.(targetSelector);
+          if (el && next !== el) hide();
+        });
+
+        document.addEventListener("click", (event) => {
+          const el = event.target.closest(".q");
+          if (!el) return;
+          clearTimeout(clickHideTimer);
+          show(el);
+          clickHideTimer = setTimeout(hide, 5000);
+        });
+
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (activeTarget && tip.classList.contains("show")) {
+              position(activeTarget);
+            }
+          },
+          { passive: true },
+        );
+
+        window.addEventListener("resize", () => {
+          if (activeTarget && tip.classList.contains("show")) {
+            position(activeTarget);
+          }
+        });
+      }
+
+      function collectState() {
+        const inputs = {};
+        document.querySelectorAll("input, select, textarea").forEach((el) => {
+          if (el.id)
+            inputs[el.id] = el.type === "checkbox" ? el.checked : el.value;
+        });
+        const debt = getDebtRows();
+        return {
+          version: "v1.3.1",
+          savedAt: new Date().toISOString(),
+          inputs,
+          debt,
+        };
+      }
+      function saveState() {
+        localStorage.setItem(
+          "iceworksQuarterlyReviewV1",
+          JSON.stringify(collectState()),
+        );
+        alert("Saved in this browser.");
+      }
+      function loadState() {
+        const raw = localStorage.getItem("iceworksQuarterlyReviewV1");
+        if (!raw) {
+          alert("No saved review found in this browser.");
+          return;
+        }
+        const data = JSON.parse(raw);
+        const legacyCombinedOwnerPay =
+          data.version !== "v1.3.1" &&
+          Math.abs(parseFloat(data.inputs?.ownerDraws || 0)) > 0;
+        Object.entries(data.inputs || {}).forEach(([id, v]) => {
+          const el = $(id);
+          if (!el) return;
+          if (el.type === "checkbox") el.checked = !!v;
+          else el.value = v;
+        });
+        if (data.debt) {
+          $("debtRows").innerHTML = "";
+          data.debt.forEach(addDebtRow);
+        }
+        if (window.syncMarketsFromHidden) window.syncMarketsFromHidden();
+        updateSectionCompletionUI(false);
+        Object.entries(DEFAULT_BENCHMARKS).forEach(([id, fallback]) => {
+          if (!(parseFloat($(id)?.value || "") > 0)) $(id).value = fallback;
+        });
+        calculate();
+        if (legacyCombinedOwnerPay) {
+          alert(
+            "This review was saved in an older version where owner pay and owner draws shared one field. Please review the new Owner compensation and Owner distributions fields before relying on debt coverage.",
+          );
+        }
+      }
+      function exportJson() {
+        const blob = new Blob([JSON.stringify(collectState(), null, 2)], {
+          type: "application/json",
+        });
+        downloadBlob(
+          blob,
+          `iceworks_quarterly_review_${slug(textVal("marketName"))}_${slug(textVal("periodName"))}.json`,
+        );
+      }
+      function exportCsv() {
+        const d = window.__reviewData || {};
+        const rows = [
+          ["Metric", "Value"],
+          ["Market", textVal("marketName")],
+          ["Period", textVal("periodName")],
+          ["Active machines end", val("machinesEnd")],
+          ["Current MRR", d.mrr],
+          ["Total revenue", d.totalRevenue],
+          ["Gross sales for royalty calculation", val("grossSalesForRoyalty")],
+          ["Royalty %", val("royaltyPercent")],
+          ["Calculated royalty cost", val("royaltyCost")],
+          ["Contribution margin %", d.grossMargin],
+          ["Service cost per machine per month", d.serviceCostPerMachine],
+          ["EBITDA before debt", d.ebitdaBeforeDebt],
+          ["Monthly debt service", d.monthlyDebtService],
+          ["Internal debt coverage", d.dscr],
+          ["Debt coverage method", d.dscrMethod],
+          ["Owner compensation addback", d.ownerCompensationAddback],
+          ["Ending cash", val("endCash")],
+          ["Cash cushion gap", d.cashCushionDelta],
+          ["A/R over 30", d.arOver30],
+          ["A/R over 30 %", d.arOver30Pct],
+          ["Total debt", d.totalDebt],
+          ["Weighted APR %", d.weightedApr],
+        ];
+        const csv = rows
+          .map((r) => r.map((c) => JSON.stringify(c ?? "")).join(","))
+          .join("\n");
+        downloadBlob(
+          new Blob([csv], { type: "text/csv" }),
+          `iceworks_quarterly_review_dashboard_${slug(textVal("marketName"))}_${slug(textVal("periodName"))}.csv`,
+        );
+      }
+      function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+      function slug(s) {
+        return (
+          String(s || "review")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "") || "review"
+        );
+      }
+
+      const reviewSectionIds = [
+        "setupSection",
+        "machinesSection",
+        "financialSection",
+        "cashSection",
+        "debtSection",
+        "arSection",
+        "benchmarkSection",
+        "notesSection",
+      ];
+      let activeReviewSectionId = reviewSectionIds[0];
+      let reviewScrollTicking = false;
+
+      function reviewScrollOffset() {
+        const horizontalNav = window.matchMedia("(max-width: 1380px)").matches;
+        if (!horizontalNav) return 22;
+        const nav = document.querySelector(".review-nav-panel");
+        return (nav?.offsetHeight || 112) + 18;
+      }
+
+      function scrollToReviewSection(sectionId, block = "start") {
+        const section = $(sectionId);
+        if (!section) return;
+        const offset = reviewScrollOffset();
+        let targetTop =
+          section.getBoundingClientRect().top + window.scrollY - offset;
+        if (block === "center") {
+          const availableHeight = Math.max(320, window.innerHeight - offset);
+          targetTop =
+            section.getBoundingClientRect().top +
+            window.scrollY -
+            Math.max(
+              offset,
+              (availableHeight -
+                Math.min(section.offsetHeight, availableHeight)) /
+                2,
+            );
+        }
+        window.scrollTo({
+          top: Math.max(0, targetTop),
+          behavior: "smooth",
+        });
+      }
+
+      function setActiveReviewSection(sectionId) {
+        if (!reviewSectionIds.includes(sectionId)) return;
+        activeReviewSectionId = sectionId;
+        const activeIndex = reviewSectionIds.indexOf(sectionId);
+
+        document.querySelectorAll("[data-review-target]").forEach((item) => {
+          const isActive = item.dataset.reviewTarget === sectionId;
+          item.classList.toggle("is-active", isActive);
+          if (isActive) item.setAttribute("aria-current", "step");
+          else item.removeAttribute("aria-current");
+        });
+
+        reviewSectionIds.forEach((id) => {
+          $(id)?.classList.toggle("is-current-section", id === sectionId);
+        });
+
+        const progress = $("reviewNavProgress");
+        if (progress)
+          progress.textContent = `${activeIndex + 1} of ${reviewSectionIds.length}`;
+
+        const activeItem = document.querySelector(
+          `[data-review-target="${sectionId}"]`,
+        );
+        if (activeItem && window.matchMedia("(max-width: 1380px)").matches) {
+          activeItem.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center",
+          });
+        }
+      }
+
+      function updateActiveReviewSectionFromScroll() {
+        reviewScrollTicking = false;
+        const activationLine =
+          reviewScrollOffset() + Math.min(140, window.innerHeight * 0.2);
+        const sections = reviewSectionIds.map((id) => $(id)).filter(Boolean);
+        if (!sections.length) return;
+
+        let current = sections[0];
+        for (const section of sections) {
+          if (section.getBoundingClientRect().top <= activationLine)
+            current = section;
+          else break;
+        }
+
+        const atPageBottom =
+          window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight - 8;
+        if (atPageBottom) current = sections[sections.length - 1];
+        setActiveReviewSection(current.id);
+      }
+
+      function queueReviewScrollUpdate() {
+        if (reviewScrollTicking) return;
+        reviewScrollTicking = true;
+        window.requestAnimationFrame(updateActiveReviewSectionFromScroll);
+      }
+
+      function setupReviewNavigator() {
+        document.querySelectorAll("[data-review-target]").forEach((item) => {
+          item.addEventListener("click", (event) => {
+            event.preventDefault();
+            const sectionId = item.dataset.reviewTarget;
+            setActiveReviewSection(sectionId);
+            scrollToReviewSection(sectionId);
+            if (history.replaceState)
+              history.replaceState(null, "", `#${sectionId}`);
+          });
+        });
+
+        $("inputCard")?.addEventListener("focusin", (event) => {
+          const section = event.target.closest(".section");
+          if (section?.id) setActiveReviewSection(section.id);
+        });
+
+        const observer = new IntersectionObserver(
+          () => queueReviewScrollUpdate(),
+          {
+            root: null,
+            rootMargin: "-18% 0px -68% 0px",
+            threshold: [0, 0.01, 0.2],
+          },
+        );
+        reviewSectionIds.forEach((id) => {
+          const section = $(id);
+          if (section) observer.observe(section);
+        });
+
+        window.addEventListener("scroll", queueReviewScrollUpdate, {
+          passive: true,
+        });
+        window.addEventListener("resize", queueReviewScrollUpdate);
+
+        const initialHash = window.location.hash.slice(1);
+        if (reviewSectionIds.includes(initialHash)) {
+          setActiveReviewSection(initialHash);
+          window.requestAnimationFrame(() =>
+            scrollToReviewSection(initialHash),
+          );
+        } else {
+          setActiveReviewSection(reviewSectionIds[0]);
+          queueReviewScrollUpdate();
+        }
+      }
+
+      function toggleBenchmarkEditing() {
+        const ids = Object.keys(DEFAULT_BENCHMARKS);
+        const shouldUnlock = ids.some((id) => $(id)?.readOnly);
+        ids.forEach((id) => {
+          if ($(id)) $(id).readOnly = !shouldUnlock;
+        });
+        $("benchmarkEditBtn").textContent = shouldUnlock
+          ? "Lock benchmarks"
+          : "Unlock benchmarks";
+        if (!shouldUnlock) {
+          Object.entries(DEFAULT_BENCHMARKS).forEach(([id, fallback]) => {
+            if (!(parseFloat($(id)?.value || "") > 0)) $(id).value = fallback;
+          });
+          calculate();
+        }
+      }
+
+      function handleCsvImport(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const text = e.target.result;
+
+          // Split into lines, ignoring empty ones at the end
+          const lines = text
+            .split("\n")
+            .filter((line) => line.trim().length > 0);
+
+          if (lines.length < 2) {
+            alert("Invalid CSV format. Could not find data rows.");
+            return;
+          }
+
+          // Parse headers (row 0) and values (row 1)
+          const headers = lines[0].split(",").map((h) => h.trim());
+          const values = lines[1].split(",").map((v) => v.trim());
+
+          const data = {};
+          headers.forEach((h, i) => {
+            data[h] = values[i];
+          });
+
+          // Map the exact CSV headers from the CRM to the Review Tool Input IDs
+          const mapping = {
+            "Beginning Active Machines": "machinesStart",
+            "Ending Active Machines": "machinesEnd",
+            "Machines Activated": "machinesAdded",
+            "Machines Removed": "machinesRemoved",
+            "Current MRR": "currentMRR",
+            "Avg Monthly Payment": "avgLeaseRate",
+            "PM Visits Completed": "pmVisits",
+            "Repair Calls Completed": "repairCalls",
+          };
+
+          let importedCount = 0;
+          for (const [csvHeader, inputId] of Object.entries(mapping)) {
+            if (data[csvHeader] !== undefined) {
+              const el = $(inputId);
+              if (el) {
+                // Strip quotes and any accidental formatting, leaving only numbers/decimals
+                el.value = data[csvHeader].replace(/[^0-9.-]/g, "");
+                importedCount++;
+              }
+            }
+          }
+
+          if (importedCount > 0) {
+            // Automatically check the Icebox Data Sources since we just imported them
+            const machinesCheck = $("dataSourceIceboxMachines");
+            const leasesCheck = $("dataSourceIceboxLeases");
+            if (machinesCheck) machinesCheck.checked = true;
+            if (leasesCheck) leasesCheck.checked = true;
+
+            // Recalculate the dashboard
+            calculate();
+            alert(
+              `Successfully imported ${importedCount} metrics from Icebox!`,
+            );
+          } else {
+            alert("No matching columns found in the uploaded CSV.");
+          }
+
+          // Reset the input so the same file can be clicked again if needed
+          event.target.value = "";
+        };
+
+        // Read the file as raw text
+        reader.readAsText(file);
+      }
+
+
+      const completionCheckboxBySection = {
+        setupSection: "setupReviewed",
+        machinesSection: "machinesReviewed",
+        financialSection: "financialsReviewed",
+        cashSection: "cashReviewed",
+        debtSection: "debtReviewed",
+        arSection: "arReviewed",
+        benchmarkSection: "benchmarksReviewed",
+        notesSection: "notesReviewed",
+      };
+
+      function setupMarketDropdown() {
+        const multi = $("marketMulti");
+        const toggle = $("marketToggle");
+        const menu = $("marketMenu");
+        const hidden = $("marketName");
+        if (!multi || !toggle || !menu || !hidden) return;
+
+        function selectedMarkets() {
+          return Array.from(document.querySelectorAll(".market-choice:checked")).map(
+            (checkbox) => checkbox.value,
+          );
+        }
+
+        window.syncMarketSelection = function syncMarketSelection() {
+          const selected = selectedMarkets();
+          hidden.value = selected.join(", ");
+          toggle.textContent = selected.length ? selected.join(", ") : "Select market(s)";
+          toggle.title = selected.join(", ");
+          calculate();
+        };
+
+        window.syncMarketsFromHidden = function syncMarketsFromHidden() {
+          const selected = new Set(
+            String(hidden.value || "")
+              .split(",")
+              .map((v) => v.trim())
+              .filter(Boolean),
+          );
+          document.querySelectorAll(".market-choice").forEach((checkbox) => {
+            checkbox.checked = selected.has(checkbox.value);
+          });
+          const selectedNow = selectedMarkets();
+          toggle.textContent = selectedNow.length ? selectedNow.join(", ") : hidden.value || "Select market(s)";
+          toggle.title = toggle.textContent;
+        };
+
+        toggle.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (toggle.disabled) return;
+          multi.classList.toggle("open");
+          toggle.setAttribute("aria-expanded", multi.classList.contains("open") ? "true" : "false");
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!multi.contains(event.target)) {
+            multi.classList.remove("open");
+            toggle.setAttribute("aria-expanded", "false");
+          }
+        });
+
+        document.querySelectorAll(".market-choice").forEach((checkbox) => {
+          checkbox.addEventListener("input", syncMarketSelection);
+        });
+
+        syncMarketsFromHidden();
+      }
+
+      function sectionFields(section) {
+        return Array.from(section.querySelectorAll("input, select, textarea, button")).filter(
+          (el) => {
+            if (!el.id) return false;
+            if (Object.values(completionCheckboxBySection).includes(el.id)) return false;
+            if (el.closest(".section-confirmation") && el.type === "checkbox") return false;
+            if (el.classList.contains("q")) return false;
+            return true;
+          },
+        );
+      }
+
+      function setSectionLocked(section, locked) {
+        sectionFields(section).forEach((el) => {
+          if (el.id === "periodMonths" || el.id === "royaltyCost" || el.id?.endsWith("_remainingTerm")) {
+            el.readOnly = true;
+            return;
+          }
+          if (el.tagName === "SELECT" || el.type === "checkbox" || el.tagName === "BUTTON") {
+            el.disabled = locked;
+          } else {
+            el.readOnly = locked;
+          }
+        });
+      }
+
+      function updateSectionCompletionUI(autoCollapse = false) {
+        reviewSectionIds.forEach((sectionId, index) => {
+          const section = $(sectionId);
+          if (!section) return;
+          const checkboxId = completionCheckboxBySection[sectionId];
+          const checkbox = checkboxId ? $(checkboxId) : null;
+          const isComplete = !!checkbox?.checked;
+          section.classList.toggle("is-complete", isComplete);
+          setSectionLocked(section, isComplete);
+
+          if (isComplete && autoCollapse) {
+            section.classList.add("is-collapsed");
+          } else if (!isComplete) {
+            section.classList.remove("is-collapsed");
+          }
+
+          const title = section.querySelector(".section-title");
+          const tag = title?.querySelector(".tag");
+          if (title && tag) {
+            let status = title.querySelector(".section-status");
+            if (!status) {
+              status = document.createElement("span");
+              status.className = "section-status";
+              tag.insertAdjacentElement("beforebegin", status);
+            }
+            status.className = `section-status ${isComplete ? "complete" : ""}`;
+            status.innerHTML = isComplete
+              ? `<span class="checkmark">✓</span> Complete`
+              : `Open`;
+            status.title = isComplete
+              ? "Click the section header to expand. Uncheck the completion box to edit."
+              : "This section has not been marked complete.";
+          }
+
+          const navItem = document.querySelector(`[data-review-target="${sectionId}"]`);
+          if (navItem) {
+            navItem.classList.toggle("is-complete", isComplete);
+            const number = navItem.querySelector(".review-nav-number");
+            if (number) number.textContent = isComplete ? "✓" : String(index + 1);
+          }
+        });
+      }
+
+      function setupSectionCompletion() {
+        reviewSectionIds.forEach((sectionId) => {
+          const section = $(sectionId);
+          if (!section) return;
+          const checkbox = $(completionCheckboxBySection[sectionId]);
+          if (checkbox) {
+            checkbox.addEventListener("change", () => {
+              updateSectionCompletionUI(true);
+              calculate();
+            });
+          }
+          const title = section.querySelector(".section-title");
+          if (title) {
+            title.addEventListener("click", (event) => {
+              if (event.target.closest(".q") || event.target.closest("button") || event.target.closest("input")) return;
+              if (!section.classList.contains("is-complete")) return;
+              section.classList.toggle("is-collapsed");
+            });
+          }
+        });
+        updateSectionCompletionUI(false);
+      }
+
+
+      function wireEvents() {
+        document
+          .querySelectorAll("input, select, textarea")
+          .forEach((el) => el.addEventListener("input", calculate));
+        $("addDebtBtn").addEventListener("click", () => {
+          addDebtRow({ enabled: true });
+          calculate();
+        });
+        $("clearDebtBtn").addEventListener("click", () => {
+          if (confirm("Clear all debt rows?")) {
+            $("debtRows").innerHTML = "";
+            addDebtRow({ enabled: false, name: "" });
+            calculate();
+          }
+        });
+        $("benchmarkEditBtn").addEventListener("click", toggleBenchmarkEditing);
+        $("confirmNoDebt").addEventListener("change", () => {
+          if ($("confirmNoDebt").checked) {
+            document
+              .querySelectorAll('#debtRows input[type="checkbox"]')
+              .forEach((checkbox) => (checkbox.checked = false));
+          }
+          calculate();
+        });
+        $("importCsvBtn").addEventListener("click", () =>
+          $("csvFileInput").click(),
+        );
+        $("csvFileInput").addEventListener("change", handleCsvImport);
+        $("recalcBtn").addEventListener("click", calculate);
+        $("saveBtn").addEventListener("click", saveState);
+        $("loadBtn").addEventListener("click", loadState);
+        $("exportJsonBtn").addEventListener("click", exportJson);
+        $("exportCsvBtn").addEventListener("click", exportCsv);
+        $("printBtn").addEventListener("click", () => window.print());
+        window.addEventListener("resize", () => calculate());
+      }
+
+      initDebtRows();
+      setToday();
+      setupTooltip();
+      setupMarketDropdown();
+      wireEvents();
+      setupReviewNavigator();
+      setupSectionCompletion();
+      calculate();
+    </script>
+  </body>
+</html>
