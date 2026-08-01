@@ -979,8 +979,31 @@
       .chart-panel {
         padding: 0 20px 20px;
       }
+      .chart-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .chart-title {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        font-weight: 950;
+        color: var(--navy);
+      }
+      .chart-subtitle {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.45;
+        font-weight: 700;
+        max-width: 560px;
+      }
       .chart-wrap {
-        height: 320px;
+        height: 340px;
         border: 1px solid var(--line);
         border-radius: 16px;
         overflow: hidden;
@@ -991,6 +1014,46 @@
         width: 100%;
         height: 100%;
         display: block;
+      }
+      .chart-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .chart-summary {
+        border: 1px solid var(--line);
+        background: var(--surface-2);
+        border-radius: 14px;
+        padding: 10px 12px;
+      }
+      .chart-summary .label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .chart-summary .value {
+        margin-top: 5px;
+        color: var(--navy);
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 950;
+        letter-spacing: -0.04em;
+      }
+      .chart-summary .value.good {
+        color: var(--good);
+      }
+      .chart-summary .value.bad {
+        color: var(--bad);
+      }
+      .chart-summary .note {
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 11px;
+        line-height: 1.35;
+        font-weight: 750;
       }
       .legend {
         display: flex;
@@ -2639,7 +2702,21 @@
           </div>
           <div class="kpi-grid" id="kpiGrid"></div>
           <div class="chart-panel">
+            <div class="chart-head">
+              <div>
+                <h3 class="chart-title">
+                  Where the Monthly Lease Revenue Goes
+                </h3>
+                <div class="chart-subtitle">
+                  Starts with ending monthly recurring lease revenue, then
+                  subtracts average monthly royalties, merchant fees, service
+                  and direct costs, operating overhead, and monthly debt service
+                  to estimate net monthly cash after debt.
+                </div>
+              </div>
+            </div>
             <div class="chart-wrap"><canvas id="quarterChart"></canvas></div>
+            <div class="chart-summary-grid" id="chartSummaryGrid"></div>
             <div class="legend" id="chartLegend"></div>
           </div>
         </aside>
@@ -3084,8 +3161,15 @@
           avgMachines > 0 ? directServiceCosts / avgMachines / months : 0;
         const revenuePerMachine =
           avgMachines > 0 ? totalRevenue / avgMachines / months : 0;
-        const mrr = val("currentMRR");
+        const enteredMrr = val("currentMRR");
+        const mrr = enteredMrr;
         const machineGrowth = val("machinesEnd") - val("machinesStart");
+        const monthlyLeaseRevenueBasis =
+          enteredMrr > 0 ? enteredMrr : val("leaseRevenue") / months;
+        const monthlyRoyaltyCost = val("royaltyCost") / months;
+        const monthlyMerchantFees = val("merchantFees") / months;
+        const monthlyServiceAndDirectCosts = directServiceCosts / months;
+        const monthlyOverhead = val("fixedOverhead") / months;
 
         updateDebtRemainingTerms();
         const allDebtRows = getDebtRows();
@@ -3130,10 +3214,14 @@
         const cashChange = val("endCash") - val("beginCash");
         const adjustedCashChange =
           cashChange - val("ownerContributions") + val("ownerDraws");
-        const monthlyBurnAfterDebt = Math.max(
-          0,
-          -(ebitdaBeforeDebt / months - monthlyDebtService),
-        );
+        const monthlyNetCashAfterDebt =
+          monthlyLeaseRevenueBasis -
+          monthlyRoyaltyCost -
+          monthlyMerchantFees -
+          monthlyServiceAndDirectCosts -
+          monthlyOverhead -
+          monthlyDebtService;
+        const monthlyBurnAfterDebt = Math.max(0, -monthlyNetCashAfterDebt);
         const cashRunway =
           monthlyBurnAfterDebt > 0
             ? val("endCash") / monthlyBurnAfterDebt
@@ -3166,6 +3254,12 @@
           revenuePerMachine,
           mrr,
           machineGrowth,
+          monthlyLeaseRevenueBasis,
+          monthlyRoyaltyCost,
+          monthlyMerchantFees,
+          monthlyServiceAndDirectCosts,
+          monthlyOverhead,
+          monthlyNetCashAfterDebt,
           totalDebt,
           monthlyDebtService,
           periodDebtService,
@@ -3683,41 +3777,129 @@
           );
           ctx.textAlign = "left";
           $("chartLegend").innerHTML = "";
+          $("chartSummaryGrid").innerHTML = "";
           return;
         }
-        const bars = [
-          { label: "Revenue", value: data.totalRevenue, color: colors.revenue },
+
+        const monthlyLeaseRevenue = data.monthlyLeaseRevenueBasis;
+        const monthlyRoyalty = data.monthlyRoyaltyCost;
+        const monthlyMerchant = data.monthlyMerchantFees;
+        const monthlyService = data.monthlyServiceAndDirectCosts;
+        const monthlyOverhead = data.monthlyOverhead;
+        const monthlyDebt = data.monthlyDebtService;
+        const monthlyNet = data.monthlyNetCashAfterDebt;
+        const deductions =
+          monthlyRoyalty +
+          monthlyMerchant +
+          monthlyService +
+          monthlyOverhead +
+          monthlyDebt;
+
+        const sourceNote =
+          data.mrr > 0
+            ? "Start value uses the ending monthly recurring lease revenue input."
+            : data.totalRevenue > 0
+              ? "Ending MRR is blank, so the chart starts with average monthly lease revenue from the period."
+              : "Enter lease revenue or ending MRR to populate the starting bar.";
+
+        $("chartSummaryGrid").innerHTML = `
+          <div class="chart-summary">
+            <div class="label">Starting point</div>
+            <div class="value">${money(monthlyLeaseRevenue)}</div>
+            <div class="note">Estimated monthly lease-revenue run rate. ${sourceNote}</div>
+          </div>
+          <div class="chart-summary">
+            <div class="label">Average monthly costs removed</div>
+            <div class="value">${money(deductions)}</div>
+            <div class="note">Royalties, merchant fees, service/direct costs, overhead, and monthly debt service.</div>
+          </div>
+          <div class="chart-summary">
+            <div class="label">Net monthly cash after debt</div>
+            <div class="value ${monthlyNet >= 0 ? "good" : "bad"}">${money(monthlyNet)}</div>
+            <div class="note">This is the simplest monthly answer to “what is left after debt?”</div>
+          </div>
+        `;
+
+        const steps = [
           {
-            label: "Direct costs",
-            value: data.directCosts,
-            color: colors.direct,
+            label: "Lease rev",
+            fullLabel: "Monthly lease revenue",
+            delta: monthlyLeaseRevenue,
+            start: 0,
+            end: monthlyLeaseRevenue,
+            color: colors.revenue,
+            kind: "increase",
+          },
+          {
+            label: "Royalties",
+            fullLabel: "Royalties",
+            delta: -monthlyRoyalty,
+            color: "#f97316",
+            kind: "decrease",
+          },
+          {
+            label: "Merchant",
+            fullLabel: "Merchant fees",
+            delta: -monthlyMerchant,
+            color: "#8b5cf6",
+            kind: "decrease",
+          },
+          {
+            label: "Service",
+            fullLabel: "Service / direct costs",
+            delta: -monthlyService,
+            color: "#0ea5a4",
+            kind: "decrease",
           },
           {
             label: "Overhead",
-            value: val("fixedOverhead"),
+            fullLabel: "Operating overhead",
+            delta: -monthlyOverhead,
             color: colors.overhead,
+            kind: "decrease",
           },
           {
             label: "Debt svc",
-            value: data.periodDebtService,
+            fullLabel: "Monthly debt service",
+            delta: -monthlyDebt,
             color: colors.debt,
-          },
-          {
-            label: "Cash change",
-            value: data.cashChange,
-            color: data.cashChange >= 0 ? colors.cash : colors.bad,
+            kind: "decrease",
           },
         ];
-        const pad = { l: 72, r: 20, t: 22, b: 62 };
-        const values = bars.map((b) => b.value);
-        let min = Math.min(0, ...values),
-          max = Math.max(0, ...values);
-        const range = Math.max(1, max - min);
-        max += range * 0.12;
-        min -= range * 0.12;
+
+        let running = 0;
+        steps.forEach((step, index) => {
+          if (index === 0) {
+            step.start = 0;
+            step.end = step.delta;
+            running = step.end;
+          } else {
+            step.start = running;
+            step.end = running + step.delta;
+            running = step.end;
+          }
+        });
+        steps.push({
+          label: "Net cash",
+          fullLabel: "Net monthly cash after debt",
+          delta: running,
+          start: 0,
+          end: running,
+          color: running >= 0 ? colors.cash : colors.bad,
+          kind: "total",
+        });
+
+        const pad = { l: 78, r: 18, t: 18, b: 76 };
+        const domainValues = steps.flatMap((s) => [s.start, s.end, 0]);
+        let min = Math.min(...domainValues);
+        let max = Math.max(...domainValues);
+        const spread = Math.max(1, max - min);
+        max += spread * 0.14;
+        min -= spread * 0.14;
         const y = (v) =>
           pad.t + ((max - v) / (max - min)) * (h - pad.t - pad.b);
         const zeroY = y(0);
+
         ctx.strokeStyle = "#dce7ee";
         ctx.lineWidth = 1;
         ctx.fillStyle = "#65758b";
@@ -3736,24 +3918,56 @@
         ctx.moveTo(pad.l, zeroY);
         ctx.lineTo(w - pad.r, zeroY);
         ctx.stroke();
-        const barW = Math.min(82, ((w - pad.l - pad.r) / bars.length) * 0.55);
-        bars.forEach((b, i) => {
-          const cx = pad.l + ((i + 0.5) * (w - pad.l - pad.r)) / bars.length;
-          const top = Math.min(y(b.value), zeroY);
-          const bh = Math.abs(y(b.value) - zeroY);
-          ctx.fillStyle = b.color;
-          roundedRect(ctx, cx - barW / 2, top, barW, Math.max(2, bh), 10);
+
+        const chartW = w - pad.l - pad.r;
+        const barSlot = chartW / steps.length;
+        const barW = Math.min(86, barSlot * 0.58);
+        let previousEndY = null;
+        let previousX = null;
+
+        steps.forEach((step, i) => {
+          const cx = pad.l + barSlot * (i + 0.5);
+          const top = Math.min(y(step.start), y(step.end));
+          const height = Math.max(2, Math.abs(y(step.end) - y(step.start)));
+          ctx.fillStyle = step.color;
+          roundedRect(ctx, cx - barW / 2, top, barW, height, 10);
           ctx.fill();
+
+          if (previousEndY !== null && step.kind !== "total") {
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = "#b8c8d6";
+            ctx.beginPath();
+            ctx.moveTo(previousX + barW / 2, previousEndY);
+            ctx.lineTo(cx - barW / 2, previousEndY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          const endY = y(step.end);
+          previousEndY = endY;
+          previousX = cx;
+
           ctx.fillStyle = "#13213b";
           ctx.font = "700 12px system-ui";
           ctx.textAlign = "center";
-          ctx.fillText(b.label, cx, h - 34);
+          ctx.fillText(step.label, cx, h - 34);
           ctx.fillStyle = "#65758b";
           ctx.font = "700 11px system-ui";
-          ctx.fillText(shortMoney(b.value), cx, h - 16);
+          ctx.fillText(shortMoney(step.delta), cx, h - 16);
           ctx.textAlign = "left";
         });
-        $("chartLegend").innerHTML = bars
+
+        $("chartLegend").innerHTML = [
+          { label: "Starting monthly lease revenue", color: colors.revenue },
+          { label: "Monthly deductions", color: colors.direct },
+          {
+            label:
+              monthlyNet >= 0
+                ? "Positive net monthly cash"
+                : "Negative net monthly cash",
+            color: monthlyNet >= 0 ? colors.cash : colors.bad,
+          },
+        ]
           .map(
             (b) =>
               `<span class="legend-item"><span class="swatch" style="background:${b.color}"></span>${b.label}</span>`,
